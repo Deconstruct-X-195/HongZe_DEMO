@@ -525,3 +525,6 @@ content: ['./index.html', './src/**/*.{vue,ts,tsx,js,jsx}']
 | `src/lib/pdfExport.ts` | PDF 导出 |
 | `tailwind.config.js` | Apple 设计令牌与主题扩展 |
 | `vite.config.ts` | 端口、别名、分包策略 |
+
+## 测试行
+这是一行用于测试CODEOWNERS审批规则的内容。
