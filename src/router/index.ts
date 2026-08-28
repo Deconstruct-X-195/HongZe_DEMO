@@ -22,7 +22,7 @@ const router = createRouter({
     {
       path: '/orders/:id',
       name: 'order-detail',
-      component: () => import('@/pages/OrderDetailPage.vue'),
+      component: () => import('@/pages/order-detail/OrderDetailPage.vue'),
       meta: { title: '订单详情' },
     },
     {
