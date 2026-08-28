@@ -4,6 +4,7 @@ import { useRouter, RouterLink } from 'vue-router'
 import Icon from '@/components/Icon.vue'
 import Badge from '@/components/Badge.vue'
 import EmptyState from '@/components/EmptyState.vue'
+import type { IconName } from '@/components/Icon.vue'
 import { useOrderStore } from '@/stores/order'
 import { STATUS_META, customersDisplay, migrateStatus } from '@/types'
 import type { Order, OrderStatus } from '@/types'
@@ -116,6 +117,23 @@ function handleDelete(id: string) {
   }
 }
 
+/* ---------- 业务模块导航 ---------- */
+const modules: { name: string; path: string; icon: IconName; color: string }[] = [
+  { name: '客户管理', path: '/customers', icon: 'building', color: '#0071e3' },
+  { name: '询价管理', path: '/inquiries', icon: 'search', color: '#ff9500' },
+  { name: '报价撮合', path: '/quotes', icon: 'send', color: '#ff6b35' },
+  { name: '合同管理', path: '/contracts', icon: 'clipboard-list', color: '#af52de' },
+  { name: '成本核算', path: '/costs', icon: 'dollar', color: '#00a8cc' },
+  { name: '付款管理', path: '/payments', icon: 'dollar', color: '#34c759' },
+  { name: '接货管理', path: '/receipts', icon: 'package', color: '#8e44ad' },
+  { name: '调度中心', path: '/dispatch', icon: 'route', color: '#5856d6' },
+  { name: '运输跟踪', path: '/transport', icon: 'truck', color: '#ff2d55' },
+  { name: '仓储入库', path: '/inbound', icon: 'package', color: '#5ac8fa' },
+  { name: '库存中心', path: '/inventory', icon: 'layers', color: '#ff9500' },
+  { name: '出库中心', path: '/outbound', icon: 'send', color: '#34c759' },
+  { name: '结算中心', path: '/settlement', icon: 'file-text', color: '#af52de' },
+]
+
 /** 运输通道类型摘要 */
 function channelSummary(o: Order): string {
   const caps = store.capacitiesOf(o.id)
@@ -165,6 +183,19 @@ function channelSummary(o: Order): string {
           <div class="text-[11px] text-apple-subtext">货物总量</div>
           <div class="text-lg font-semibold text-apple-purple mt-0.5">{{ fmtNum(stats.totalTons) }}<span class="text-xs font-normal text-apple-subtext ml-1">吨</span></div>
         </div>
+      </div>
+    </section>
+
+    <!-- 业务模块导航 -->
+    <section class="card p-5">
+      <h2 class="text-sm font-semibold text-apple-text mb-4">业务模块</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <RouterLink v-for="mod in modules" :key="mod.path" :to="mod.path" class="flex flex-col items-center justify-center p-4 rounded-xl border border-apple-border/50 hover:border-apple-blue/40 hover:bg-apple-blue/5 transition-all group">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-2 text-white" :style="{ backgroundColor: mod.color }">
+            <Icon :name="mod.icon" :size="20" />
+          </div>
+          <span class="text-xs font-medium text-apple-text group-hover:text-apple-blue">{{ mod.name }}</span>
+        </RouterLink>
       </div>
     </section>
 
