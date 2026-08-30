@@ -8,7 +8,15 @@
           <div class="grid grid-cols-2 gap-4">
             <div><label class="field-label">报价单号</label><input v-model="form.quoteNo" type="text" class="field-input bg-apple-fill/50" readonly /></div>
             <div><label class="field-label">状态</label><select v-model="form.status" class="field-input"><option v-for="(meta, key) in QUOTE_STATUS_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
-            <div><label class="field-label">关联询价ID</label><input v-model="form.inquiryId" type="text" class="field-input" /></div>
+            <div>
+              <label class="field-label">关联询价 <span class="text-apple-red">*</span></label>
+              <select v-model="form.inquiryId" class="field-input" @change="onInquiryChange">
+                <option value="">请选择询价</option>
+                <option v-for="i in business.inquiries" :key="i.id" :value="i.id">
+                  {{ i.inquiryNo }} · {{ i.customerName || '未署名' }} · {{ i.cargoName }} {{ i.cargoQty }} 吨
+                </option>
+              </select>
+            </div>
             <div><label class="field-label">关联订单ID</label><input v-model="form.orderId" type="text" class="field-input" /></div>
             <div><label class="field-label">客户ID</label><input v-model="form.customerId" type="text" class="field-input" /></div>
             <div><label class="field-label">客户名称 <span class="text-apple-red">*</span></label><input v-model="form.customerName" type="text" required class="field-input" /></div>
@@ -67,5 +75,13 @@ const removeItem = (idx: number) => {
   form.value.items = (form.value.items || []).filter((_, i) => i !== idx)
 }
 const handleSubmit = () => { if (isEdit.value) business.updateQuote(itemId.value, form.value); else business.addQuote(form.value); router.push('/quotes') }
-onMounted(() => { business.loadQuotes(); if (isEdit.value) { const item = business.quotes.find((q) => q.id === itemId.value); if (item) form.value = { ...item } } })
+/** 选择询价后自动回填客户信息，避免手工填写错位 */
+function onInquiryChange() {
+  const inquiry = business.inquiries.find((i) => i.id === form.value.inquiryId)
+  if (inquiry) {
+    form.value.customerId = inquiry.customerId
+    if (!form.value.customerName) form.value.customerName = inquiry.customerName
+  }
+}
+onMounted(() => { business.loadInquiries(); business.loadQuotes(); if (isEdit.value) { const item = business.quotes.find((q) => q.id === itemId.value); if (item) form.value = { ...item } } })
 </script>

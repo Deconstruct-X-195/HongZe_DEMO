@@ -15,7 +15,11 @@
             <div><label class="field-label">确认人</label><input v-model="form.confirmedBy" type="text" class="field-input" /></div>
             <div><label class="field-label">对客报价</label><input v-model.number="form.quotedPrice" type="number" class="field-input" /></div>
             <div><label class="field-label">毛利</label><input v-model.number="form.profit" type="number" class="field-input" /></div>
-            <div><label class="field-label">毛利率(%)</label><input v-model.number="form.profitRate" type="number" step="0.01" class="field-input" /></div>
+            <div>
+              <label class="field-label">毛利率(%)</label>
+              <input v-model.number="form.profitRate" type="number" step="0.01" min="0" max="100" class="field-input" :data-error="!!profitRateError" />
+              <p v-if="profitRateError" class="text-[11px] text-apple-red mt-1">{{ profitRateError }}</p>
+            </div>
           </div>
         </div>
         <div class="mb-6">
@@ -59,6 +63,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PageHeader from '@/components/PageHeader.vue'
 import { useBusinessStore } from '@/stores'
 import { COST_ITEM_TYPE_META } from '@/types'
+import { percentError } from '@/lib/validators'
 import type { CostSheet, CostItem } from '@/types'
 const route = useRoute()
 const router = useRouter()
@@ -67,12 +72,15 @@ const isEdit = computed(() => !!route.params.id)
 const itemId = computed(() => route.params.id as string)
 const form = ref<Partial<CostSheet>>({ costNo: '', orderId: '', inquiryId: '', quoteId: '', items: [], totalCost: 0, quotedPrice: 0, profit: 0, profitRate: 0, status: 'draft', calculatedBy: '', confirmedBy: '', remark: '' })
 const computedTotal = computed(() => (form.value.items || []).reduce((s, item) => s + (item.amount || 0), 0))
+/** 毛利率客观范围：0 - 100% */
+const profitRateError = computed(() => percentError(form.value.profitRate))
 const addItem = () => {
   const newItem: CostItem = { id: `item_${Date.now()}`, type: 'rail_freight', name: '', unit: '', unitPrice: 0, quantity: 0, amount: 0, remark: '' }
   form.value.items = [...(form.value.items || []), newItem]
 }
 const removeItem = (idx: number) => { form.value.items = (form.value.items || []).filter((_, i) => i !== idx) }
 const handleSubmit = () => {
+  if (profitRateError.value) return
   form.value.totalCost = computedTotal.value
   if (isEdit.value) business.updateCostSheet(itemId.value, form.value)
   else business.addCostSheet(form.value)

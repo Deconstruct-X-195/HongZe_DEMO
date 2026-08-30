@@ -1,22 +1,34 @@
 <template>
   <div class="animate-fade-in">
-<PageHeader title="报价撮合" />
+<PageHeader title="报价撮合" subtitle="根据客户询价编制运输报价，发送客户确认后成交生成订单。" />
     <div class="space-y-5">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <input v-model="search" type="text" placeholder="搜索报价单号/客户/货物..." class="field-input py-2 w-64" />
-          <select v-model="filterStatus" class="field-input py-2 w-auto">
-            <option value="">全部状态</option>
-            <option v-for="(meta, key) in QUOTE_STATUS_META" :key="key" :value="key">{{ meta.label }}</option>
-          </select>
+      <!-- 摘要条（单行，替代大统计卡） -->
+      <div class="card px-5 py-3 flex items-center gap-5 flex-wrap">
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-lg font-bold text-apple-text tabular-nums">{{ business.quotes.length }}</span>
+          <span class="text-xs text-apple-subtext">条报价</span>
         </div>
-        <button @click="goToNew" class="btn-primary">新增报价</button>
+        <div class="w-px h-6 bg-apple-border/70"></div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-lg font-bold text-apple-orange tabular-nums">{{ negotiatingCount }}</span>
+          <span class="text-xs text-apple-subtext">条协商中</span>
+        </div>
+        <div class="w-px h-6 bg-apple-border/70"></div>
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-lg font-bold text-apple-green tabular-nums">{{ acceptedCount }}</span>
+          <span class="text-xs text-apple-subtext">条已成交</span>
+        </div>
+        <button @click="goToNew" class="btn-primary ml-auto text-xs">
+          <Icon name="plus" :size="14" />
+          新增报价
+        </button>
       </div>
-      <div class="grid grid-cols-4 gap-4">
-        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">报价总数</div><div class="text-xl font-semibold tabular-nums text-apple-text">{{ business.quotes.length }}</div></div>
-        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">协商中</div><div class="text-xl font-semibold tabular-nums text-apple-orange">{{ negotiatingCount }}</div></div>
-        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">已接受</div><div class="text-xl font-semibold tabular-nums text-apple-green">{{ acceptedCount }}</div></div>
-        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">报价总额</div><div class="text-xl font-semibold tabular-nums text-apple-blue">¥{{ totalPrice.toLocaleString() }}</div></div>
+      <div class="flex items-center gap-3">
+        <input v-model="search" type="text" placeholder="搜索报价单号/客户..." class="field-input py-2 w-64" />
+        <select v-model="filterStatus" class="field-input py-2 w-auto">
+          <option value="">全部状态</option>
+          <option v-for="(meta, key) in QUOTE_STATUS_META" :key="key" :value="key">{{ meta.label }}</option>
+        </select>
       </div>
       <div class="card overflow-hidden">
         <table class="w-full">
@@ -42,7 +54,9 @@
                 <Badge :label="QUOTE_STATUS_META[item.status]?.label" :color="QUOTE_STATUS_META[item.status]?.color" :bg="QUOTE_STATUS_META[item.status]?.bg" />
               </td>
               <td class="px-4 py-3">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                  <button v-if="item.status === 'draft'" @click="sendToCustomer(item.id)" class="text-apple-blue text-sm hover:underline">发送客户</button>
+                  <RouterLink v-if="item.orderId" :to="`/orders/${item.orderId}`" class="text-apple-green text-sm hover:underline">查看订单</RouterLink>
                   <button @click="goToEdit(item.id)" class="text-apple-blue text-sm hover:underline">编辑</button>
                   <button @click="handleDelete(item.id)" class="text-apple-red text-sm hover:underline">删除</button>
                 </div>
@@ -57,9 +71,10 @@
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, RouterLink } from 'vue-router'
 import PageHeader from '@/components/PageHeader.vue'
 import Badge from '@/components/Badge.vue'
+import Icon from '@/components/Icon.vue'
 import { useBusinessStore } from '@/stores'
 import { QUOTE_STATUS_META } from '@/types'
 const router = useRouter()
@@ -73,9 +88,20 @@ const filteredList = computed(() => business.quotes.filter((q) => {
 }))
 const negotiatingCount = computed(() => business.quotes.filter((q) => q.status === 'negotiating').length)
 const acceptedCount = computed(() => business.quotes.filter((q) => q.status === 'accepted').length)
-const totalPrice = computed(() => business.quotes.reduce((s, q) => s + (q.finalPrice || 0), 0))
 const goToNew = () => router.push('/quotes/new')
 const goToEdit = (id: string) => router.push(`/quotes/${id}/edit`)
 const handleDelete = (id: string) => { if (confirm('确定删除？')) business.removeQuote(id) }
-onMounted(() => business.loadQuotes())
+
+/** 发送客户：报价进入协商，客户可在门户查看并接受；关联询价推进为已报价 */
+function sendToCustomer(id: string) {
+  const q = business.quotes.find((x) => x.id === id)
+  if (!q) return
+  business.updateQuote(id, { status: 'negotiating' })
+  // 兼容历史数据：关联值可能是询价 id 或询价编号
+  const inquiry = business.inquiries.find((i) => i.id === q.inquiryId || i.inquiryNo === q.inquiryId)
+  if (inquiry && (inquiry.status === 'received' || inquiry.status === 'in_plan' || inquiry.status === 'submitted')) {
+    business.updateInquiry(inquiry.id, { status: 'quoted' })
+  }
+}
+onMounted(() => { business.loadQuotes(); business.loadInquiries() })
 </script>

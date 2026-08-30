@@ -54,6 +54,8 @@ const existing = id ? store.getById(id) : undefined
 const order = reactive<Order>(existing ? { ...existing } : emptyOrder(''))
 const saved = ref(false)
 const errors = reactive<Record<string, string>>({})
+/** 校验失败提示（表单顶部展示） */
+const validationTip = ref('')
 
 // 草稿自动保存（仅编辑模式）
 watch(
@@ -152,6 +154,9 @@ function validate(): boolean {
     if (v === '' || v === 0 || v === null || v === undefined) errors[k] = '必填'
   })
   // 来源矿山、终端客户、到港信息均为选填项
+  if (Object.keys(errors).length > 0) {
+    validationTip.value = `有 ${Object.keys(errors).length} 项必填信息未填写，请检查标红字段后重试`
+  }
   return Object.keys(errors).length === 0
 }
 
@@ -183,6 +188,7 @@ function generate() {
     first?.scrollIntoView({ behavior: 'smooth', block: 'center' })
     return
   }
+  validationTip.value = ''
   const finalId = order.id || store.generateId()
   const now = new Date().toISOString()
   const finalOrder: Order = {
@@ -223,9 +229,16 @@ function generate() {
       </template>
     </PageHeader>
 
+    <!-- 校验失败提示 -->
+    <div v-if="validationTip" class="rounded-apple-lg border border-apple-red/30 bg-apple-red/[0.06] px-4 py-3 flex items-center gap-2.5 text-sm text-apple-red">
+      <Icon name="alert" :size="16" class="shrink-0" />
+      {{ validationTip }}
+    </div>
+
     <FieldGroup icon="building" title="客户" desc="客户名称与联系人信息" collapsible v-model:isOpen="customerOpen" :summary="customerSummary">
       <div class="grid sm:grid-cols-2 gap-4">
         <Field label="客户" required>
+          <div :data-error="!!errors.trader">
             <SearchSelect
               :options="TRADER_OPTIONS"
               :model-value="order.trader"
@@ -234,6 +247,7 @@ function generate() {
               label="客户"
               other-placeholder="如：中矿国链"
             />
+          </div>
         </Field>
         <Field label="联系人" required>
           <input
@@ -259,14 +273,16 @@ function generate() {
     <FieldGroup icon="package" title="货物信息" desc="货物名称、数量与品质" collapsible v-model:isOpen="cargoOpen" :summary="cargoSummary">
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Field label="货物名称" required>
-          <SearchSelect
-            :options="CARGO_CATEGORIES"
-            :model-value="order.cargoName"
-            @update:model-value="setField('cargoName', $event)"
-            placeholder="如：PB粉"
-            label="货物名称"
-            other-placeholder="如：PB粉"
-          />
+          <div :data-error="!!errors.cargoName">
+            <SearchSelect
+              :options="CARGO_CATEGORIES"
+              :model-value="order.cargoName"
+              @update:model-value="setField('cargoName', $event)"
+              placeholder="如：PB粉"
+              label="货物名称"
+              other-placeholder="如：PB粉"
+            />
+          </div>
         </Field>
         <Field label="货物总量（吨）" required>
           <input

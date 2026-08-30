@@ -1,11 +1,16 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { RouterLink } from 'vue-router'
+import { computed } from 'vue'
 import Icon from './Icon.vue'
 import type { IconName } from './Icon.vue'
 import { useTheme } from '@/theme'
+import { useAuthStore } from '@/stores/auth'
+import { NAV_GROUPS, canAccessModule } from '@/types/auth'
 
 const route = useRoute()
+const router = useRouter()
+const auth = useAuthStore()
 const { isDark, toggle } = useTheme()
 
 const appTitle = import.meta.env.VITE_APP_TITLE ?? '泓泽宜通'
@@ -16,52 +21,26 @@ interface NavItem {
   icon: IconName
 }
 
-/** 分组导航：总览 / 业务协作 / 运输执行 / 仓储物流 / 财务结算 */
-const groups: { label: string; items: NavItem[] }[] = [
-  {
-    label: '总览',
-    items: [
-      { name: '工作台', path: '/', icon: 'home' },
-    ],
-  },
-  {
-    label: '业务协作',
-    items: [
-      { name: '客户管理', path: '/customers', icon: 'building' },
-      { name: '询价管理', path: '/inquiries', icon: 'search' },
-      { name: '报价撮合', path: '/quotes', icon: 'send' },
-      { name: '合同管理', path: '/contracts', icon: 'clipboard-list' },
-      { name: '成本核算', path: '/costs', icon: 'dollar' },
-      { name: '付款管理', path: '/payments', icon: 'dollar' },
-    ],
-  },
-  {
-    label: '运输执行',
-    items: [
-      { name: '接货管理', path: '/receipts', icon: 'package' },
-      { name: '调度中心', path: '/dispatch', icon: 'route' },
-      { name: '运输跟踪', path: '/transport', icon: 'truck' },
-    ],
-  },
-  {
-    label: '仓储物流',
-    items: [
-      { name: '仓储入库', path: '/inbound', icon: 'package' },
-      { name: '库存中心', path: '/inventory', icon: 'layers' },
-      { name: '出库中心', path: '/outbound', icon: 'send' },
-    ],
-  },
-  {
-    label: '财务结算',
-    items: [
-      { name: '结算中心', path: '/settlement', icon: 'file-text' },
-    ],
-  },
-]
+/** 按当前角色过滤导航分组 */
+const groups = computed<{ label: string; items: NavItem[] }[]>(() =>
+  NAV_GROUPS
+    .map((g) => ({
+      label: g.label,
+      items: g.items
+        .filter((m) => auth.isLoggedIn && canAccessModule(auth.role, m))
+        .map((m) => ({ name: m.name, path: m.path, icon: m.icon })),
+    }))
+    .filter((g) => g.items.length > 0),
+)
 
 function isActive(path: string): boolean {
   if (path === '/') return route.path === '/'
   return route.path === path || route.path.startsWith(`${path}/`)
+}
+
+function logout() {
+  auth.logout()
+  router.replace('/login')
 }
 </script>
 
@@ -70,7 +49,7 @@ function isActive(path: string): boolean {
     class="hidden md:flex sticky top-0 h-screen w-56 shrink-0 flex-col bg-apple-sidebar border-r border-apple-border"
   >
     <!-- 品牌区 -->
-    <RouterLink to="/" class="flex items-center gap-2.5 h-14 px-4 shrink-0">
+    <RouterLink :to="auth.defaultPath" class="flex items-center gap-2.5 h-14 px-4 shrink-0">
       <div
         class="flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-apple-blue to-apple-bluePress text-white shadow-sm"
       >
@@ -109,8 +88,28 @@ function isActive(path: string): boolean {
       </div>
     </nav>
 
-    <!-- 底部：主题切换（与导航行同为居中布局） -->
+    <!-- 底部：当前身份 + 退出 + 主题切换 -->
     <div class="shrink-0 px-2 pt-2 pb-3 border-t border-apple-border">
+      <!-- 身份卡片 -->
+      <div class="flex items-center gap-2.5 px-3 py-2 mb-1.5 rounded-[10px] bg-apple-fill/60">
+        <div
+          class="flex items-center justify-center w-7 h-7 rounded-full shrink-0 text-white text-[11px] font-semibold"
+          :style="{ backgroundColor: auth.roleMeta.color }"
+        >
+          {{ auth.user?.name.slice(0, 1) }}
+        </div>
+        <div class="flex-1 min-w-0 leading-tight">
+          <div class="text-xs font-medium text-apple-text truncate">{{ auth.user?.name }}</div>
+          <div class="text-[11px] text-apple-tertiary">{{ auth.roleMeta.label }}</div>
+        </div>
+        <button
+          @click="logout"
+          title="退出登录"
+          class="text-apple-tertiary hover:text-apple-red transition-colors shrink-0"
+        >
+          <Icon name="arrow-left" :size="14" />
+        </button>
+      </div>
       <button
         @click="toggle"
         class="flex items-center justify-center gap-2.5 h-9 w-full px-3 rounded-[10px] text-sm text-apple-subtext hover:bg-apple-hover/10 hover:text-apple-text transition-colors duration-150"
@@ -118,7 +117,7 @@ function isActive(path: string): boolean {
         <Icon :name="isDark ? 'sun' : 'moon'" :size="16" class="shrink-0" />
         {{ isDark ? '切换亮色模式' : '切换暗色模式' }}
       </button>
-      <div class="px-3 pt-2 text-[10px] text-apple-tertiary text-center">内部使用 · Demo</div>
+      <div class="px-3 pt-2 text-[11px] text-apple-tertiary text-center">内部使用 · Demo</div>
     </div>
   </aside>
 </template>

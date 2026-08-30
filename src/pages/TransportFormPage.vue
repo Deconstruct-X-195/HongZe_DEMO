@@ -35,8 +35,16 @@
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">损耗与状态</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="field-label">损耗数量(吨)</label><input v-model.number="form.lossQty" type="number" class="field-input" /></div>
-            <div><label class="field-label">损耗率(%)</label><input v-model.number="form.lossRate" type="number" step="0.01" class="field-input" /></div>
+            <div>
+              <label class="field-label">损耗数量(吨)</label>
+              <input v-model.number="form.lossQty" type="number" min="0" class="field-input" :data-error="!!lossQtyError" />
+              <p v-if="lossQtyError" class="text-[11px] text-apple-red mt-1">{{ lossQtyError }}</p>
+            </div>
+            <div>
+              <label class="field-label">损耗率(%)</label>
+              <input v-model.number="form.lossRate" type="number" step="0.01" min="0" max="100" class="field-input" :data-error="!!lossRateError" />
+              <p v-if="lossRateError" class="text-[11px] text-apple-red mt-1">{{ lossRateError }}</p>
+            </div>
             <div><label class="field-label">跟单员</label><input v-model="form.tracker" type="text" class="field-input" /></div>
             <div><label class="field-label">状态</label><select v-model="form.status" class="field-input"><option v-for="(meta, key) in TRANSPORT_STATUS_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
           </div>
@@ -56,6 +64,7 @@ import { useRoute, useRouter } from 'vue-router'
 import PageHeader from '@/components/PageHeader.vue'
 import { useBusinessStore } from '@/stores'
 import { TRANSPORT_STATUS_META } from '@/types'
+import { percentError, nonNegativeError } from '@/lib/validators'
 import type { TransportRecord } from '@/types'
 const route = useRoute()
 const router = useRouter()
@@ -63,6 +72,18 @@ const business = useBusinessStore()
 const isEdit = computed(() => !!route.params.id)
 const itemId = computed(() => route.params.id as string)
 const form = ref<Partial<TransportRecord>>({ dispatchId: '', orderId: '', cargoName: '', cargoQty: 0, origin: '', destination: '', vehicleNo: '', driverName: '', driverPhone: '', carrier: '', loadingTime: '', departureTime: '', arrivalTime: '', unloadingTime: '', lossQty: 0, lossRate: 0, tracker: '', status: 'pending', nodes: [], remark: '' })
-const handleSubmit = () => { if (isEdit.value) business.updateTransportRecord(itemId.value, form.value); else business.addTransportRecord(form.value); router.push('/transport') }
+
+/* ---------- 客观事实范围校验 ---------- */
+const lossQtyError = computed(() => {
+  const base = nonNegativeError(form.value.lossQty)
+  if (base) return base
+  if ((form.value.lossQty || 0) > (form.value.cargoQty || 0)) return '损耗数量不能超过运输数量'
+  return null
+})
+const lossRateError = computed(() => percentError(form.value.lossRate))
+
+const handleSubmit = () => {
+  if (lossQtyError.value || lossRateError.value) return
+  if (isEdit.value) business.updateTransportRecord(itemId.value, form.value); else business.addTransportRecord(form.value); router.push('/transport') }
 onMounted(() => { business.loadTransportRecords(); if (isEdit.value) { const item = business.transportRecords.find((t) => t.id === itemId.value); if (item) form.value = { ...item } } })
 </script>

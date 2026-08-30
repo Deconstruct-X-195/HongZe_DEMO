@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
+import { computed } from 'vue'
 import Sidebar from '@/components/Sidebar.vue'
+
+const route = useRoute()
+/** 登录页使用全屏布局，不渲染侧边栏 */
+const isAuthPage = computed(() => route.path === '/login')
 </script>
 
 <template>
-  <div class="min-h-screen flex bg-apple-bg text-apple-text">
+  <div v-if="isAuthPage" class="min-h-screen bg-apple-bg text-apple-text">
+    <RouterView />
+  </div>
+  <div v-else class="min-h-screen flex bg-apple-bg text-apple-text">
     <Sidebar />
     <div class="flex-1 min-w-0 flex flex-col">
       <main class="flex-1 mx-auto w-full max-w-6xl px-4 sm:px-6 py-6 sm:py-8">

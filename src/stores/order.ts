@@ -141,18 +141,39 @@ export const useOrderStore = defineStore('order', () => {
 
   /* ---------- 财务信息 ---------- */
   function financialOf(orderId: string): FinancialInfo {
-    return getFinancial(orderId) ?? emptyFinancial(orderId)
+    const existing = getFinancial(orderId)
+    if (existing) {
+      // 历史数据兜底：未落过总金额的订单按 数量×单价 自动补齐
+      if (!existing.totalAmount) {
+        const o = getById(orderId)
+        if (o?.cargoTotal && o.cargoPrice) {
+          existing.totalAmount = o.cargoTotal * o.cargoPrice
+        }
+      }
+      return existing
+    }
+    // 新订单：总金额自动从订单计算（货物总量 × 货物单价）
+    const empty = emptyFinancial(orderId)
+    const o = getById(orderId)
+    if (o?.cargoTotal && o.cargoPrice) {
+      empty.totalAmount = o.cargoTotal * o.cargoPrice
+    }
+    return empty
   }
   function saveFinancial(info: FinancialInfo) {
     upsertFinancial({ ...info, updatedAt: new Date().toISOString() })
   }
 
   /* ---------- 运输通道发运信息 ---------- */
+  /** 发运数据版本号：shippingsOf 直读 localStorage，用版本号建立响应式依赖，保存时自增触发视图刷新 */
+  const shippingVersion = ref(0)
   function shippingsOf(orderId: string): ChannelShipping[] {
+    void shippingVersion.value
     return listShippings(orderId)
   }
   function saveShippings(orderId: string, items: ChannelShipping[]) {
     upsertShippings(orderId, items)
+    shippingVersion.value++
   }
   /** 根据运力通道初始化发运信息（若不存在），并迁移旧数据缺失字段 */
   function ensureShippings(orderId: string, capacities: Capacity[]): ChannelShipping[] {
@@ -160,9 +181,10 @@ export const useOrderStore = defineStore('order', () => {
     const result: ChannelShipping[] = capacities.map((c) => {
       const found = existing.find((s) => s.capacityId === c.id)
       if (found) {
-        // 旧数据迁移：补全新字段
+        // 旧数据迁移：补全新字段；plannedQty 为派生数据，始终与运力方案同步
         return {
           ...found,
+          plannedQty: c.plannedQty ?? found.plannedQty ?? 0,
           storedQty: found.storedQty ?? 0,
           pickedUpQty: found.pickedUpQty ?? 0,
         }

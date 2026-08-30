@@ -305,10 +305,22 @@ const allocationStatus = computed(() => {
   return 'over' // 超分配
 })
 
+/** 判断通道记录是否为未填写的空记录（不落库，避免污染发货通道选择与状态闭环）
+ *  规则：无路线（起点/终点均空）且无计划运量的通道视为空，仅填闲置运力无业务意义 */
+function isBlankChannel(r: { origin: string; transfer?: string; destination: string; idleCapacity: number; plannedQty: number }): boolean {
+  return !r.origin && !r.transfer && !r.destination && !(r.plannedQty > 0)
+}
+
+/** 有效通道：路线完整（起点+终点）且计划运量大于 0 */
+function isValidChannel(r: { origin: string; transfer?: string; destination: string; plannedQty: number }): boolean {
+  return !!r.origin && !!r.destination && (r.plannedQty || 0) > 0
+}
+
 function saveAll(silent = false): boolean {
   void silent
   const list: Capacity[] = []
   ;[...railDirects, ...transitRails].forEach((r) => {
+    if (isBlankChannel(r)) return
     list.push({
       id: r.id,
       orderId: id,
@@ -326,6 +338,7 @@ function saveAll(silent = false): boolean {
     })
   })
   roads.forEach((r) => {
+    if (isBlankChannel(r)) return
     list.push({
       id: r.id,
       orderId: id,
@@ -348,9 +361,17 @@ function saveAll(silent = false): boolean {
 const exporting = ref(false)
 const exported = ref(false)
 const reportRef = ref<HTMLDivElement | null>(null)
+const validationError = ref('')
 
-/** 完成方案：保存数据 + 更新状态 + 显示成功提示（不自动下载 PDF） */
+/** 完成方案：校验 + 保存数据 + 更新状态 + 显示成功提示（不自动下载 PDF） */
 function completePlan() {
+  const all = [...railDirects, ...transitRails, ...roads]
+  const validCount = all.filter((r) => isValidChannel(r)).length
+  if (validCount === 0) {
+    validationError.value = '请至少完整填写一条运输通道（起点、终点、计划运输量），才能完成方案'
+    return
+  }
+  validationError.value = ''
   saveAll(true)
   store.setStatus(id, 'pending_confirm')
   exported.value = true
@@ -436,6 +457,13 @@ const railCapacities = computed<Capacity[]>(() =>
         </button>
       </div>
     </div>
+
+    <!-- 校验提示：无有效通道时阻止提交 -->
+    <div v-if="validationError" class="rounded-apple-lg px-4 py-2.5 flex items-center gap-2.5 text-xs font-medium bg-apple-red/10 text-apple-red border border-apple-red/20">
+      <Icon name="alert" :size="14" />
+      {{ validationError }}
+    </div>
+  </div>
 
     <!-- 核心信息展示：总运费 + 运输时间 + 货物分配 -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -529,7 +557,6 @@ const railCapacities = computed<Capacity[]>(() =>
           <template v-else>超分配 {{ fmtNum(Math.abs(unallocatedQty)) }} 吨</template>
         </div>
       </div>
-    </div>
     </div>
 
     <!-- 内容区域 -->

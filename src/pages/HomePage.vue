@@ -1,17 +1,22 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
-import Icon from '@/components/Icon.vue'
+import Icon, { type IconName } from '@/components/Icon.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import Badge from '@/components/Badge.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import { useOrderStore } from '@/stores/order'
+import { useAuthStore } from '@/stores/auth'
 import { STATUS_META, customersDisplay, migrateStatus } from '@/types'
 import type { Order, OrderStatus } from '@/types'
 import { fmtDateShort, fmtNum } from '@/lib/format'
 
 const router = useRouter()
 const store = useOrderStore()
+const auth = useAuthStore()
+
+/** 订单创建/删除仅限业务人员与系统管理员 */
+const canCreateOrder = computed(() => auth.role === 'sales' || auth.role === 'admin')
 
 /* ---------- 搜索 ---------- */
 const query = ref('')
@@ -105,9 +110,9 @@ function handleDelete(id: string) {
   }
 }
 
-/** 运输通道类型摘要 */
+/** 运输通道类型摘要（只统计已编制计划的通道，空通道不计入） */
 function channelSummary(o: Order): string {
-  const caps = store.capacitiesOf(o.id)
+  const caps = store.capacitiesOf(o.id).filter((c) => (c.plannedQty || 0) > 0 || c.origin || c.destination)
   if (caps.length === 0) return '—'
   const types = new Set(caps.map((c) => {
     const m = { rail_direct: '铁路直达', rail_caozhuang: '公铁联运', rail_xingtai: '公铁联运', rail_transit: '公铁联运', road: '公路直达' }
@@ -116,21 +121,47 @@ function channelSummary(o: Order): string {
   return Array.from(types).join(' · ')
 }
 
+/* ---------- 工作台入口（分岗位任务中心，仅显示当前角色有权访问的工作台） ---------- */
+const workspaces = computed(() => {
+  const pendingPayment = store.orders.filter((o) => migrateStatus(o.status) === 'pending_confirm').length
+  const shippingOrders = store.orders.filter((o) => {
+    const s = migrateStatus(o.status)
+    return s === 'confirmed' || s === 'shipping'
+  }).length
+  const warehouseOrders = store.orders.filter((o) => {
+    const s = migrateStatus(o.status)
+    if (!s || s === 'draft' || s === 'port' || s === 'capacity' || s === 'plan' || s === 'pending_confirm') return false
+    const shippings = store.shippingsOf(o.id)
+    return shippings.some((x) => (x.shippedQty || 0) > 0)
+  }).length
+  return [
+    { key: 'finance', label: '财务工作台', desc: '确认收款 · 解锁发运', count: pendingPayment, icon: 'dollar' as IconName, to: '/workspace/finance' },
+    { key: 'transport', label: '运输工作台', desc: '批次发货 · 通道管理', count: shippingOrders, icon: 'send' as IconName, to: '/workspace/transport' },
+    { key: 'warehouse', label: '仓储工作台', desc: '到货入库 · 提货出关', count: warehouseOrders, icon: 'package' as IconName, to: '/workspace/warehouse' },
+  ].filter((w) => auth.canAccess(w.to))
+})
+
 /* ---------- 状态 → 下一步操作 ---------- */
 const NEXT_ACTION: Record<NonNullable<OrderStatus>, { label: string; to: (id: string) => string; primary: boolean }> = {
   draft: { label: '继续录入', to: (id) => `/orders/${id}/edit`, primary: true },
   port: { label: '录入港口', to: (id) => `/orders/${id}/port`, primary: true },
   capacity: { label: '录入运力', to: (id) => `/orders/${id}/capacity`, primary: true },
   plan: { label: '编制方案', to: (id) => `/orders/${id}/plan`, primary: true },
-  pending_confirm: { label: '确认方案', to: (id) => `/orders/${id}`, primary: true },
-  confirmed: { label: '安排发运', to: (id) => `/orders/${id}`, primary: true },
-  shipping: { label: '跟踪发运', to: (id) => `/orders/${id}`, primary: true },
+  pending_confirm: { label: '确认收款', to: () => '/workspace/finance', primary: true },
+  confirmed: { label: '安排发运', to: () => '/workspace/transport', primary: true },
+  shipping: { label: '跟踪发运', to: () => '/workspace/transport', primary: true },
   shipped: { label: '查看详情', to: (id) => `/orders/${id}`, primary: false },
   completed: { label: '查看详情', to: (id) => `/orders/${id}`, primary: false },
 }
 function nextActionOf(o: Order) {
   const s = migrateStatus(o.status) ?? 'draft'
-  return NEXT_ACTION[s]
+  const action = NEXT_ACTION[s]
+  // 目标页无权访问时，降级为查看详情（如业务人员看到待收款订单）
+  const target = action.to(o.id)
+  if (!auth.canAccess(target)) {
+    return { label: '查看详情', to: (id: string) => `/orders/${id}`, primary: false }
+  }
+  return action
 }
 </script>
 
@@ -138,6 +169,33 @@ function nextActionOf(o: Order) {
   <div class="space-y-5 animate-fade-in">
     <!-- 页面头 -->
     <PageHeader title="工作台" subtitle="录入订单、港口与运力，自动生成运输组织方案，逐单推进发运。" />
+
+    <!-- 分岗位工作台入口（仅当前角色可访问的工作台） -->
+    <div v-if="workspaces.length > 0" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <RouterLink
+        v-for="w in workspaces"
+        :key="w.key"
+        :to="w.to"
+        class="card p-4 flex items-center gap-3.5 hover:border-apple-blue/40 hover:shadow-md transition-all duration-200 group"
+      >
+        <div class="flex items-center justify-center w-11 h-11 rounded-apple bg-apple-blue/[0.07] text-apple-blue shrink-0 group-hover:scale-105 transition-transform">
+          <Icon :name="w.icon" :size="19" />
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-apple-text">{{ w.label }}</span>
+            <span
+              v-if="w.count > 0"
+              class="text-[11px] px-1.5 py-0.5 rounded-full bg-apple-orange/10 text-apple-orange font-semibold tabular-nums"
+            >
+              {{ w.count }} 待办
+            </span>
+          </div>
+          <p class="text-[11px] text-apple-subtext mt-0.5">{{ w.desc }}</p>
+        </div>
+        <Icon name="chevron-right" :size="15" class="text-apple-subtext group-hover:text-apple-blue group-hover:translate-x-0.5 transition-all shrink-0" />
+      </RouterLink>
+    </div>
 
     <!-- 统计条：点击即筛选 -->
     <div class="card overflow-hidden">
@@ -189,7 +247,7 @@ function nextActionOf(o: Order) {
           title="还没有订单"
           desc="从订单录入开始，依次填写港口与运力信息，最终生成运输组织方案。"
         >
-          <button @click="router.push('/orders/new')" class="btn-primary">
+          <button v-if="canCreateOrder" @click="router.push('/orders/new')" class="btn-primary">
             <Icon name="plus" :size="16" />
             创建第一个订单
           </button>
@@ -217,7 +275,7 @@ function nextActionOf(o: Order) {
                 class="field-input pl-9 py-2 w-56 max-w-full"
               />
             </div>
-            <button @click="router.push('/orders/new')" class="btn-primary shrink-0">
+            <button v-if="canCreateOrder" @click="router.push('/orders/new')" class="btn-primary shrink-0">
               <Icon name="plus" :size="15" />
               新建订单
             </button>
@@ -262,7 +320,7 @@ function nextActionOf(o: Order) {
                     <Icon v-if="sortKey === 'createdAt'" name="chevron-right" :size="11" :class="sortDesc ? 'rotate-90' : '-rotate-90'" />
                   </button>
                 </th>
-                <th class="w-10 px-4 py-2.5" />
+                <th v-if="canCreateOrder" class="w-10 px-4 py-2.5" />
               </tr>
             </thead>
             <tbody>
@@ -303,7 +361,7 @@ function nextActionOf(o: Order) {
                   </RouterLink>
                 </td>
                 <td class="px-4 py-3 text-xs text-apple-tertiary tabular-nums whitespace-nowrap">{{ fmtDateShort(o.updatedAt || o.createdAt) }}</td>
-                <td class="px-4 py-3">
+                <td v-if="canCreateOrder" class="px-4 py-3">
                   <button
                     @click="handleDelete(o.id)"
                     class="flex items-center justify-center w-7 h-7 rounded-full text-apple-tertiary hover:bg-apple-red/10 hover:text-apple-red opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all"

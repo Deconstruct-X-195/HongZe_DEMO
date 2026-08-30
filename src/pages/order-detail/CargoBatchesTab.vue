@@ -51,7 +51,7 @@
       <h3 class="text-sm font-semibold text-apple-text mb-4 flex items-center gap-2">
         <Icon name="plus" :size="14" class="text-apple-blue" />
         新增货物批次
-        <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue font-medium">承运前固化</span>
+        <span class="text-[11px] px-1.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue font-medium">承运前固化</span>
       </h3>
       <form @submit.prevent="handleAdd" class="space-y-4">
         <div class="grid grid-cols-2 gap-3">
@@ -116,15 +116,15 @@
       />
       <div class="mt-3 grid grid-cols-3 gap-2 text-center">
         <div class="rounded-apple bg-apple-fill/40 px-2 py-1.5">
-          <div class="text-[10px] text-apple-subtext">当前库存</div>
+          <div class="text-[11px] text-apple-subtext">当前库存</div>
           <div class="text-xs font-bold text-apple-text mt-0.5">{{ fmtNum(stockOf(b)) }} 吨</div>
         </div>
         <div class="rounded-apple bg-apple-fill/40 px-2 py-1.5">
-          <div class="text-[10px] text-apple-subtext">剩余未入库</div>
+          <div class="text-[11px] text-apple-subtext">剩余未入库</div>
           <div class="text-xs font-bold text-apple-text mt-0.5">{{ fmtNum(remainingOf(b)) }} 吨</div>
         </div>
         <div class="rounded-apple bg-apple-fill/40 px-2 py-1.5">
-          <div class="text-[10px] text-apple-subtext">创建时间</div>
+          <div class="text-[11px] text-apple-subtext">创建时间</div>
           <div class="text-xs font-bold text-apple-text mt-0.5">{{ fmtDate(b.createdAt) }}</div>
         </div>
       </div>

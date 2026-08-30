@@ -29,8 +29,8 @@
             <div><label class="field-label">仓库/堆场 <span class="text-apple-red">*</span></label><input v-model="form.warehouse" type="text" required class="field-input" /></div>
             <div><label class="field-label">库位/堆位</label><input v-model="form.location" type="text" class="field-input" /></div>
             <div><label class="field-label">入库日期</label><input v-model="form.inboundDate" type="date" class="field-input" /></div>
-            <div><label class="field-label">免费期(天)</label><input v-model.number="form.freeDays" type="number" class="field-input" /></div>
-            <div><label class="field-label">堆存费(元)</label><input v-model.number="form.storageFee" type="number" class="field-input" /></div>
+            <div><label class="field-label">免费期(天)</label><input v-model.number="form.freeDays" type="number" min="0" class="field-input" /></div>
+            <div><label class="field-label">堆存费(元)</label><input v-model.number="form.storageFee" type="number" min="0" class="field-input" /></div>
           </div>
         </div>
         <div class="mb-6"><label class="field-label">备注</label><textarea v-model="form.remark" rows="3" class="field-input resize-none"></textarea></div>

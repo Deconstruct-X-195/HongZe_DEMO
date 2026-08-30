@@ -50,7 +50,10 @@
 
   body {
     @apply bg-apple-bg text-apple-text font-sans antialiased;
-    letter-spacing: -0.01em;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI',
+      'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue',
+      Arial, sans-serif;
+    letter-spacing: 0;
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
@@ -98,6 +101,13 @@
   }
   .field-input:disabled {
     @apply bg-apple-fill text-apple-subtext cursor-not-allowed;
+  }
+  /* 校验失败：红框高亮（配合 data-error 属性） */
+  .field-input[data-error='true'] {
+    @apply border-apple-red ring-4 ring-apple-red/10;
+  }
+  div[data-error='true'] {
+    @apply rounded-apple ring-4 ring-apple-red/10;
   }
 
   /* 分组标题 */

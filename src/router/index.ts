@@ -1,17 +1,71 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import { canAccessPath } from '@/types/auth'
 
 /**
  * 路由表 —— 全部懒加载，按需分包。
  * base 使用相对路径 './'，便于部署到子目录；如部署到根域名可改为 '/'。
+ * 访问权限由全局守卫按 types/auth.ts 的 NAV_GROUPS 角色映射控制。
  */
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/pages/LoginPage.vue'),
+      meta: { title: '登录', public: true },
+    },
+    {
       path: '/',
       name: 'home',
       component: () => import('@/pages/HomePage.vue'),
       meta: { title: '订单列表' },
+    },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: () => import('@/pages/DashboardPage.vue'),
+      meta: { title: '经营驾驶舱' },
+    },
+    {
+      path: '/supply-chain',
+      name: 'supply-chain',
+      component: () => import('@/pages/SupplyChainPage.vue'),
+      meta: { title: '供应链监控' },
+    },
+    // 客户门户（询价/报价/订单跟踪）
+    {
+      path: '/portal',
+      name: 'customer-portal',
+      component: () => import('@/pages/portal/CustomerPortalPage.vue'),
+      meta: { title: '客户门户' },
+    },
+    // 物流全景（货物流转动态总览，全部角色可见）
+    {
+      path: '/flow',
+      name: 'flow',
+      component: () => import('@/pages/FlowPage.vue'),
+      meta: { title: '物流全景' },
+    },
+    // ============ 分岗位工作台 ============
+    {
+      path: '/workspace/finance',
+      name: 'workspace-finance',
+      component: () => import('@/pages/workspace/FinanceWorkspacePage.vue'),
+      meta: { title: '财务工作台' },
+    },
+    {
+      path: '/workspace/transport',
+      name: 'workspace-transport',
+      component: () => import('@/pages/workspace/TransportWorkspacePage.vue'),
+      meta: { title: '运输工作台' },
+    },
+    {
+      path: '/workspace/warehouse',
+      name: 'workspace-warehouse',
+      component: () => import('@/pages/workspace/WarehouseWorkspacePage.vue'),
+      meta: { title: '仓储工作台' },
     },
     {
       path: '/orders/new',
@@ -116,6 +170,23 @@ router.afterEach((to) => {
   const base = import.meta.env.VITE_APP_TITLE ?? '泓泽宜通'
   const t = to.meta.title as string | undefined
   document.title = t ? `${t} · ${base}` : base
+})
+
+/* ---------- 全局登录守卫：未登录跳转 /login，无权限跳回角色默认页 ---------- */
+router.beforeEach((to) => {
+  const auth = useAuthStore()
+  if (to.meta.public) {
+    // 已登录访问登录页 → 回默认页
+    if (auth.isLoggedIn && to.path === '/login') return auth.defaultPath
+    return true
+  }
+  if (!auth.isLoggedIn) {
+    return { path: '/login', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
+  }
+  if (!canAccessPath(auth.role, to.path)) {
+    return auth.defaultPath
+  }
+  return true
 })
 
 export default router

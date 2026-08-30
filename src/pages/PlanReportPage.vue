@@ -473,7 +473,7 @@ async function exportPDF() {
               <div class="flex items-center gap-1.5 mb-2.5">
                 <Icon name="truck" :size="12" class="text-apple-green" />
                 <span class="text-[11px] font-semibold text-apple-text">后程公路短途运输</span>
-                <span class="text-[10px] text-apple-subtext">（中转站 → 终端钢厂）</span>
+                <span class="text-[11px] text-apple-subtext">（中转站 → 终端钢厂）</span>
               </div>
               <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2">
                 <InfoRow label="运输车辆类型" :value="detailOf(ct)!.postLeg.vehicleType || '—'" />
