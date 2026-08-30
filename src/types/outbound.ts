@@ -48,7 +48,7 @@ export interface Outbound {
 
 export const OUTBOUND_STATUS_META: Record<OutboundStatus, { label: string; color: string; bg: string }> = {
   pending: { label: '待审批', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
-  approved: { label: '已审批', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  approved: { label: '已审批', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   weighing: { label: '过磅中', color: '#af52de', bg: 'rgba(175,82,222,0.12)' },
   loading: { label: '装车中', color: '#5856d6', bg: 'rgba(88,86,214,0.12)' },
   completed: { label: '已出库', color: '#34c759', bg: 'rgba(52,199,89,0.12)' },

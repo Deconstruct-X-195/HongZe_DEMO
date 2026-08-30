@@ -50,7 +50,7 @@ export const SHIPPING_META: Record<ShippingState, { label: string; color: string
 /** 货物动态节点状态元数据 */
 export const MILESTONE_META: Record<MilestoneState, { label: string; color: string; bg: string }> = {
   pending: { label: '待处理', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
-  in_progress: { label: '进行中', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  in_progress: { label: '进行中', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   completed: { label: '已完成', color: '#34c759', bg: 'rgba(52,199,89,0.12)' },
   exception: { label: '异常', color: '#ff3b30', bg: 'rgba(255,59,48,0.12)' },
 }

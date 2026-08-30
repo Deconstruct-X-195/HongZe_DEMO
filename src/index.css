@@ -2,7 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============ 主题变量（仿 DeepSeek Harness design-platform.css） ============
+ * 亮色：bluish 灰阶 + 品牌蓝 rgb(65,118,230)
+ * 暗色：body.dark 切换，背景分层 950/850，边框用白色透明度梯度
+ *=================================================================== */
 @layer base {
+  :root {
+    color-scheme: light;
+    --hz-bg: 249 250 251;            /* neutral-bluish-50 */
+    --hz-card: 255 255 255;          /* neutral-bluish-00 */
+    --hz-sidebar: 249 250 251;       /* bluish-50，侧边栏微沉 */
+    --hz-fill: 235 238 242;          /* bluish-100 */
+    --hz-fill-strong: 225 229 238;   /* bluish-200 */
+    --hz-hover: 38 49 72;            /* 配 /10 做悬停叠加 */
+    --hz-text: 15 17 21;             /* bluish-1000 */
+    --hz-subtext: 97 102 107;        /* bluish-700 */
+    --hz-tertiary: 129 133 140;      /* bluish-600 */
+    --hz-border: rgba(0, 0, 0, 0.1); /* border-l2 */
+    --hz-brand: 65 118 230;          /* deepseek-500 */
+    --hz-brand-hover: 103 158 254;   /* deepseek-400 */
+    --hz-brand-press: 72 104 178;    /* deepseek-600 */
+    --hz-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+    --hz-shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .dark {
+    color-scheme: dark;
+    --hz-bg: 21 21 23;               /* bluish-950 */
+    --hz-card: 33 33 35;             /* neutral-850 与 875 之间 */
+    --hz-sidebar: 27 27 28;          /* bluish-900 */
+    --hz-fill: 44 44 46;             /* bluish-850 */
+    --hz-fill-strong: 53 54 56;      /* bluish-800 */
+    --hz-hover: 255 255 255;         /* 配 /10 做悬停叠加 */
+    --hz-text: 249 250 251;          /* bluish-50 */
+    --hz-subtext: 207 211 214;       /* bluish-300 */
+    --hz-tertiary: 173 178 184;      /* bluish-400 */
+    --hz-border: rgba(255, 255, 255, 0.12);
+    --hz-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.32);
+    --hz-shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.5), 0 12px 32px rgba(0, 0, 0, 0.45);
+  }
+
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -12,6 +51,7 @@
   body {
     @apply bg-apple-bg text-apple-text font-sans antialiased;
     letter-spacing: -0.01em;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   * {
@@ -31,7 +71,7 @@
   }
   .btn-secondary {
     @apply btn bg-apple-card text-apple-text border border-apple-border
-           hover:bg-gray-50 active:bg-gray-100;
+           hover:bg-apple-hover/10 active:bg-apple-hover;
   }
   .btn-ghost {
     @apply btn text-apple-blue hover:bg-apple-blue/10;
@@ -42,7 +82,8 @@
 
   /* 卡片 */
   .card {
-    @apply bg-apple-card rounded-apple-lg border border-apple-border/60 shadow-card;
+    @apply bg-apple-card rounded-apple-lg border border-apple-border shadow-card;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
 
   /* 表单输入 */
@@ -50,13 +91,13 @@
     @apply block text-xs font-medium text-apple-subtext mb-1.5 tracking-wide;
   }
   .field-input {
-    @apply w-full rounded-apple border border-apple-border bg-white px-3.5 py-2.5 text-sm
-           text-apple-text placeholder:text-gray-400
+    @apply w-full rounded-apple border border-apple-border bg-apple-card px-3.5 py-2.5 text-sm
+           text-apple-text placeholder:text-apple-tertiary
            focus:outline-none focus:border-apple-blue focus:ring-4 focus:ring-apple-blue/15
            transition-all duration-150 ease-apple;
   }
   .field-input:disabled {
-    @apply bg-gray-50 text-apple-subtext cursor-not-allowed;
+    @apply bg-apple-fill text-apple-subtext cursor-not-allowed;
   }
 
   /* 分组标题 */
@@ -65,19 +106,27 @@
   }
 }
 
-/* 自定义滚动条 */
+/* 主题感知滚动条 */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(127, 130, 135, 0.4);
   border-radius: 8px;
   border: 2px solid transparent;
   background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(127, 130, 135, 0.6);
+  background-clip: content-box;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(151, 157, 166, 0.3);
+  background-clip: content-box;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(151, 157, 166, 0.5);
   background-clip: content-box;
 }
 ::-webkit-scrollbar-track {

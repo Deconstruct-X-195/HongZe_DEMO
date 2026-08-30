@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{vue,ts,tsx,js,jsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       fontFamily: {
@@ -24,17 +25,25 @@ export default {
         ],
       },
       colors: {
-        // 苹果系统色
+        // 主题色：全部走 CSS 变量（src/index.css 定义亮/暗两套），
+        // "R G B" 三元组形式以支持 /alpha 修饰符（如 bg-apple-fill/60）。
         apple: {
-          blue: '#0071e3',
-          blueHover: '#0077ed',
-          bluePress: '#006edb',
-          gray: '#86868b',
-          bg: '#fbfbfd',
-          card: '#ffffff',
-          border: '#d2d2d7',
-          text: '#1d1d1f',
-          subtext: '#6e6e73',
+          bg: 'rgb(var(--hz-bg) / <alpha-value>)',
+          card: 'rgb(var(--hz-card) / <alpha-value>)',
+          sidebar: 'rgb(var(--hz-sidebar) / <alpha-value>)',
+          fill: 'rgb(var(--hz-fill) / <alpha-value>)',
+          'fill-strong': 'rgb(var(--hz-fill-strong) / <alpha-value>)',
+          hover: 'rgb(var(--hz-hover) / <alpha-value>)',
+          text: 'rgb(var(--hz-text) / <alpha-value>)',
+          subtext: 'rgb(var(--hz-subtext) / <alpha-value>)',
+          // 兼容旧命名 text-apple-text-secondary
+          'text-secondary': 'rgb(var(--hz-subtext) / <alpha-value>)',
+          tertiary: 'rgb(var(--hz-tertiary) / <alpha-value>)',
+          // 边框为预混 rgba，不支持 /alpha 修饰符
+          border: 'var(--hz-border)',
+          blue: 'rgb(var(--hz-brand) / <alpha-value>)',
+          blueHover: 'rgb(var(--hz-brand-hover) / <alpha-value>)',
+          bluePress: 'rgb(var(--hz-brand-press) / <alpha-value>)',
           green: '#34c759',
           orange: '#ff9500',
           red: '#ff3b30',
@@ -43,7 +52,7 @@ export default {
         // 状态色
         status: {
           draft: '#8e8e93',
-          port: '#0071e3',
+          port: 'rgb(var(--hz-brand) / <alpha-value>)',
           capacity: '#ff9500',
           plan: '#af52de',
           done: '#34c759',
@@ -55,9 +64,9 @@ export default {
         'apple-xl': '24px',
       },
       boxShadow: {
-        card: '0 1px 2px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04)',
-        'card-hover': '0 2px 8px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.08)',
-        focus: '0 0 0 4px rgba(0,113,227,0.18)',
+        card: 'var(--hz-shadow-card)',
+        'card-hover': 'var(--hz-shadow-card-hover)',
+        focus: '0 0 0 4px rgb(var(--hz-brand) / 0.18)',
       },
       transitionTimingFunction: {
         apple: 'cubic-bezier(0.4, 0, 0.2, 1)',

@@ -411,7 +411,7 @@ const railCapacities = computed<Capacity[]>(() =>
 
   <div v-else class="space-y-4 animate-fade-in">
     <!-- 顶部固定表头：订单号 + 核心指标 + 导出按钮 -->
-    <div id="capacity-header" class="sticky top-0 z-40 -mx-4 px-4 pt-4 pb-3 space-y-3 bg-white/90 backdrop-blur-xl border-b border-apple-border/40">
+    <div id="capacity-header" class="sticky top-0 z-40 -mx-4 px-4 pt-4 pb-3 space-y-3 bg-apple-card/90 backdrop-blur-xl border-b border-apple-border/40">
     <!-- 顶部：订单号（缩小，左上角）+ 核心指标 + 导出按钮 -->
     <div class="flex items-start justify-between gap-3 flex-wrap">
       <div class="flex items-center gap-2">
@@ -472,7 +472,7 @@ const railCapacities = computed<Capacity[]>(() =>
           'bg-gradient-to-br from-apple-orange/10 to-transparent border-apple-orange/20': allocationStatus === 'warning',
           'bg-gradient-to-br from-apple-green/10 to-transparent border-apple-green/20': allocationStatus === 'success',
           'bg-gradient-to-br from-apple-red/10 to-transparent border-apple-red/20': allocationStatus === 'over',
-          'bg-gray-50 border-apple-border/40': allocationStatus === 'empty',
+          'bg-apple-fill border-apple-border/40': allocationStatus === 'empty',
         }"
       >
         <div class="flex items-center gap-2 text-xs text-apple-subtext">
@@ -501,14 +501,14 @@ const railCapacities = computed<Capacity[]>(() =>
           <span class="text-[11px] text-apple-subtext">完成率</span>
         </div>
         <!-- 进度条 -->
-        <div class="mt-2 h-1.5 rounded-full bg-gray-200/60 overflow-hidden">
+        <div class="mt-2 h-1.5 rounded-full bg-apple-fill-strong/60 overflow-hidden">
           <div
             class="h-full rounded-full transition-all duration-500"
             :class="{
               'bg-apple-orange': allocationStatus === 'warning',
               'bg-apple-green': allocationStatus === 'success',
               'bg-apple-red': allocationStatus === 'over',
-              'bg-gray-300': allocationStatus === 'empty',
+              'bg-apple-fill-strong': allocationStatus === 'empty',
             }"
             :style="{ width: allocationRate + '%' }"
           ></div>
@@ -540,7 +540,7 @@ const railCapacities = computed<Capacity[]>(() =>
           @click="toggleRail"
           :aria-expanded="railOpen"
           aria-controls="rail-content"
-          class="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors"
+          class="w-full flex items-center justify-between px-5 py-4 hover:bg-apple-hover/10 transition-colors"
         >
           <div class="flex items-center gap-3">
             <div class="flex items-center justify-center w-9 h-9 rounded-apple bg-apple-blue/10 text-apple-blue">
@@ -566,7 +566,7 @@ const railCapacities = computed<Capacity[]>(() =>
               @click="toggleRailDirect"
               :aria-expanded="railDirectOpen"
               aria-controls="rail-direct-content"
-              class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-apple-hover/10 transition-colors"
             >
               <div class="flex items-center gap-2">
                 <span class="w-1 h-4 rounded-full bg-apple-blue"></span>
@@ -591,7 +591,7 @@ const railCapacities = computed<Capacity[]>(() =>
               <div
                 v-for="(r, idx) in railDirects"
                 :key="r.id"
-                class="rounded-apple border border-apple-border/60 p-3.5 bg-gray-50/30"
+                class="rounded-apple border border-apple-border/60 p-3.5 bg-apple-fill/30"
                 :style="{ borderLeft: `3px solid ${CHANNEL_META.rail_direct.color}` }"
               >
                 <div class="flex items-center gap-2 mb-3">
@@ -658,7 +658,7 @@ const railCapacities = computed<Capacity[]>(() =>
                   <Field label="运输时效（天）" hint="自动计算：计划运输量 ÷ 运力">
                     <input
                       type="number"
-                      class="field-input bg-gray-50/60"
+                      class="field-input bg-apple-fill/60"
                       :value="r.leadTime || ''"
                       readonly
                       placeholder="自动计算"
@@ -685,7 +685,7 @@ const railCapacities = computed<Capacity[]>(() =>
               @click="toggleTransit"
               :aria-expanded="transitOpen"
               aria-controls="transit-content"
-              class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-gray-50/50 transition-colors"
+              class="w-full flex items-center justify-between px-4 py-2.5 hover:bg-apple-hover/10 transition-colors"
             >
               <div class="flex items-center gap-2">
                 <span class="w-1 h-4 rounded-full bg-apple-purple"></span>
@@ -710,7 +710,7 @@ const railCapacities = computed<Capacity[]>(() =>
               <div
                 v-for="(r, idx) in transitRails"
                 :key="r.id"
-                class="rounded-apple border border-apple-border/60 p-3.5 bg-gray-50/30"
+                class="rounded-apple border border-apple-border/60 p-3.5 bg-apple-fill/30"
                 :style="{ borderLeft: `3px solid ${CHANNEL_META.rail_transit.color}` }"
               >
                 <div class="flex items-center gap-2 mb-3">
@@ -790,7 +790,7 @@ const railCapacities = computed<Capacity[]>(() =>
                   <Field label="运输时效（天）" hint="自动计算">
                     <input
                       type="number"
-                      class="field-input bg-gray-50/60"
+                      class="field-input bg-apple-fill/60"
                       :value="r.leadTime || ''"
                       readonly
                       placeholder="自动计算"
@@ -829,7 +829,7 @@ const railCapacities = computed<Capacity[]>(() =>
           @click="toggleRoad"
           :aria-expanded="roadOpen"
           aria-controls="road-content"
-          class="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50/50 transition-colors"
+          class="w-full flex items-center justify-between px-5 py-4 hover:bg-apple-hover/10 transition-colors"
         >
           <div class="flex items-center gap-3">
             <div class="flex items-center justify-center w-9 h-9 rounded-apple bg-apple-green/10 text-apple-green">
@@ -862,7 +862,7 @@ const railCapacities = computed<Capacity[]>(() =>
             <div
               v-for="(r, idx) in roads"
               :key="r.id"
-              class="rounded-apple border border-apple-border/60 p-3.5 bg-gray-50/30"
+              class="rounded-apple border border-apple-border/60 p-3.5 bg-apple-fill/30"
               style="border-left: 3px solid #34c759"
             >
               <div class="flex items-center gap-2 mb-3">
@@ -929,7 +929,7 @@ const railCapacities = computed<Capacity[]>(() =>
                 <Field label="运输时效（天）" hint="自动计算">
                   <input
                     type="number"
-                    class="field-input bg-gray-50/60"
+                    class="field-input bg-apple-fill/60"
                     :value="r.leadTime || ''"
                     readonly
                     placeholder="自动计算"
@@ -954,7 +954,7 @@ const railCapacities = computed<Capacity[]>(() =>
 
     <!-- 底部操作栏 -->
     <div class="sticky bottom-4 z-30">
-      <div class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-white/85">
+      <div class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-apple-card/85">
         <RouterLink :to="`/orders/${order.id}/port`" class="btn-ghost">
           <Icon name="arrow-left" :size="15" /> 上一步
         </RouterLink>

@@ -1,39 +1,39 @@
 <template>
-  <div class="min-h-screen bg-apple-bg">
-    <TopBar title="接货管理" />
-    <div class="max-w-6xl mx-auto px-4 py-6">
-      <div class="flex items-center justify-between mb-4">
+  <div class="animate-fade-in">
+<PageHeader title="接货管理" />
+    <div class="space-y-5">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <input v-model="search" type="text" placeholder="搜索接货单号/货物/地点..." class="px-4 py-2 rounded-lg border border-apple-border bg-white text-sm w-64 focus:outline-none focus:ring-2 focus:ring-apple-blue/30" />
-          <select v-model="filterStatus" class="px-3 py-2 rounded-lg border border-apple-border bg-white text-sm focus:outline-none">
+          <input v-model="search" type="text" placeholder="搜索接货单号/货物/地点..." class="field-input py-2 w-64" />
+          <select v-model="filterStatus" class="field-input py-2 w-auto">
             <option value="">全部状态</option>
             <option v-for="(meta, key) in RECEIPT_STATUS_META" :key="key" :value="key">{{ meta.label }}</option>
           </select>
         </div>
-        <button @click="goToNew" class="px-4 py-2 bg-apple-blue text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">+ 新增接货</button>
+        <button @click="goToNew" class="btn-primary">新增接货</button>
       </div>
-      <div class="grid grid-cols-4 gap-4 mb-6">
-        <div class="bg-white rounded-xl p-4 shadow-sm"><div class="text-apple-text-secondary text-xs mb-1">接货单总数</div><div class="text-2xl font-semibold text-apple-text">{{ business.receipts.length }}</div></div>
-        <div class="bg-white rounded-xl p-4 shadow-sm"><div class="text-apple-text-secondary text-xs mb-1">待接货</div><div class="text-2xl font-semibold text-orange-500">{{ pendingCount }}</div></div>
-        <div class="bg-white rounded-xl p-4 shadow-sm"><div class="text-apple-text-secondary text-xs mb-1">接货中</div><div class="text-2xl font-semibold text-blue-500">{{ inProgressCount }}</div></div>
-        <div class="bg-white rounded-xl p-4 shadow-sm"><div class="text-apple-text-secondary text-xs mb-1">已完成</div><div class="text-2xl font-semibold text-green-500">{{ completedCount }}</div></div>
+      <div class="grid grid-cols-4 gap-4">
+        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">接货单总数</div><div class="text-xl font-semibold tabular-nums text-apple-text">{{ business.receipts.length }}</div></div>
+        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">待接货</div><div class="text-xl font-semibold tabular-nums text-apple-orange">{{ pendingCount }}</div></div>
+        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">接货中</div><div class="text-xl font-semibold tabular-nums text-blue-500">{{ inProgressCount }}</div></div>
+        <div class="card px-4 py-3.5"><div class="text-apple-tertiary text-[11px] mb-1">已完成</div><div class="text-xl font-semibold tabular-nums text-apple-green">{{ completedCount }}</div></div>
       </div>
-      <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="card overflow-hidden">
         <table class="w-full">
-          <thead class="bg-apple-bg border-b border-apple-border">
+          <thead class="bg-apple-fill/40 border-b border-apple-border">
             <tr>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">接货单号</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">关联订单</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">货物</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">计划/实际(吨)</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">接货地点</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">交货方</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">状态</th>
-              <th class="text-left px-4 py-3 text-xs font-medium text-apple-text-secondary">操作</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">接货单号</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">关联订单</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">货物</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">计划/实际(吨)</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">接货地点</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">交货方</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">状态</th>
+              <th class="text-left px-4 py-3 text-[11px] font-medium text-apple-tertiary tracking-wide">操作</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in filteredList" :key="item.id" class="border-b border-apple-border last:border-0 hover:bg-apple-bg/50">
+            <tr v-for="item in filteredList" :key="item.id" class="border-b border-apple-border last:border-0 hover:bg-apple-hover/10">
               <td class="px-4 py-3 font-medium text-apple-text">{{ item.receiptNo }}</td>
               <td class="px-4 py-3 text-sm text-apple-text-secondary">{{ item.orderId || '-' }}</td>
               <td class="px-4 py-3 text-sm text-apple-text">{{ item.cargoName }}</td>
@@ -41,12 +41,12 @@
               <td class="px-4 py-3 text-sm text-apple-text">{{ item.location }}</td>
               <td class="px-4 py-3 text-sm text-apple-text">{{ item.consignor || '-' }}</td>
               <td class="px-4 py-3">
-                <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium" :style="{ color: RECEIPT_STATUS_META[item.status]?.color, backgroundColor: RECEIPT_STATUS_META[item.status]?.bg }">{{ RECEIPT_STATUS_META[item.status]?.label }}</span>
+                <Badge :label="RECEIPT_STATUS_META[item.status]?.label" :color="RECEIPT_STATUS_META[item.status]?.color" :bg="RECEIPT_STATUS_META[item.status]?.bg" />
               </td>
               <td class="px-4 py-3">
                 <div class="flex items-center gap-2">
                   <button @click="goToEdit(item.id)" class="text-apple-blue text-sm hover:underline">编辑</button>
-                  <button @click="handleDelete(item.id)" class="text-red-500 text-sm hover:underline">删除</button>
+                  <button @click="handleDelete(item.id)" class="text-apple-red text-sm hover:underline">删除</button>
                 </div>
               </td>
             </tr>
@@ -60,7 +60,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import TopBar from '@/components/TopBar.vue'
+import PageHeader from '@/components/PageHeader.vue'
+import Badge from '@/components/Badge.vue'
 import { useBusinessStore } from '@/stores'
 import { RECEIPT_STATUS_META } from '@/types'
 const router = useRouter()

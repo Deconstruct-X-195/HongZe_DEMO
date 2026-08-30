@@ -4,6 +4,7 @@ import { useRoute, RouterLink } from 'vue-router'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 import Icon from '@/components/Icon.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import Badge from '@/components/Badge.vue'
 import InfoRow from '@/components/InfoRow.vue'
 import { useOrderStore } from '@/stores/order'
@@ -246,17 +247,12 @@ async function exportPDF() {
   </div>
 
   <div v-else class="space-y-5 animate-fade-in">
-    <div class="flex items-center justify-between gap-3 flex-wrap">
-      <div>
-        <h1 class="text-xl font-semibold tracking-tight text-apple-text">
-          运输组织方案报告
-        </h1>
-        <p class="text-xs text-apple-subtext mt-1">
-          订单编号
-          <span class="font-mono font-semibold text-apple-text">{{ order.id }}</span>
-        </p>
-      </div>
-      <div class="flex items-center gap-2">
+    <PageHeader title="运输组织方案报告">
+      <template #subtitle>
+        订单编号
+        <span class="font-mono font-semibold text-apple-text">{{ order.id }}</span>
+      </template>
+      <template #actions>
         <span
           v-if="savedTip"
           class="text-[11px] text-apple-green flex items-center gap-1 animate-fade-in"
@@ -273,11 +269,11 @@ async function exportPDF() {
           <Icon name="download" :size="15" />
           {{ exporting ? '导出中…' : '导出PDF' }}
         </button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- 报告主体 -->
-    <div ref="reportRef" class="space-y-4 bg-white p-1">
+    <div ref="reportRef" class="space-y-4 bg-apple-card p-1">
       <!-- 报告头 -->
       <div class="pdf-section card p-6 sm:p-8 text-center bg-gradient-to-br from-white to-gray-50">
         <div class="flex items-center justify-center gap-2 mb-2">
@@ -437,7 +433,7 @@ async function exportPDF() {
             v-for="ct in TRANSIT_CHANNELS"
             :key="ct"
             v-show="hasDetail(detailOf(ct))"
-            class="rounded-apple border border-apple-border/60 p-4 bg-gray-50/30"
+            class="rounded-apple border border-apple-border/60 p-4 bg-apple-fill/30"
             :style="{ borderLeft: `3px solid ${CHANNEL_META[ct].color}` }"
           >
             <div class="flex items-center gap-2 mb-3">
@@ -573,7 +569,7 @@ async function exportPDF() {
         </div>
 
         <div v-if="batches.length === 0" class="text-center py-8">
-          <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-apple-subtext mx-auto mb-3">
+          <div class="w-12 h-12 rounded-full bg-apple-fill flex items-center justify-center text-apple-subtext mx-auto mb-3">
             <Icon name="layers" :size="22" />
           </div>
           <p class="text-sm text-apple-text font-medium">尚未设计运输方案</p>
@@ -601,7 +597,7 @@ async function exportPDF() {
             <tbody>
               <tr v-for="(b, idx) in batches" :key="idx" class="border-b border-apple-border/40 last:border-0">
                 <td class="py-3 pr-3">
-                  <span class="flex items-center justify-center w-6 h-6 rounded-md bg-gray-100 text-apple-text text-xs font-semibold">
+                  <span class="flex items-center justify-center w-6 h-6 rounded-md bg-apple-fill text-apple-text text-xs font-semibold">
                     {{ b.batchNo }}
                   </span>
                 </td>
@@ -709,7 +705,7 @@ async function exportPDF() {
 
     <!-- 操作栏 -->
     <div class="sticky bottom-4 z-30">
-      <div class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-white/85">
+      <div class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-apple-card/85">
         <RouterLink :to="`/orders/${order.id}/capacity`" class="btn-ghost">
           <Icon name="arrow-left" :size="15" /> 上一步
         </RouterLink>

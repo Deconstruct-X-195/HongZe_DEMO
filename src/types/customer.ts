@@ -23,7 +23,7 @@ export interface Customer {
 }
 
 export const CUSTOMER_TYPE_META: Record<CustomerType, { label: string; color: string }> = {
-  trader: { label: '贸易商', color: '#0071e3' },
+  trader: { label: '贸易商', color: '#4176e6' },
   consignor: { label: '委托方', color: '#ff9500' },
   owner: { label: '货主', color: '#34c759' },
   carrier: { label: '承运方', color: '#5856d6' },

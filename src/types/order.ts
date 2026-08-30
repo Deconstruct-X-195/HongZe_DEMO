@@ -56,11 +56,11 @@ export const STATUS_META: Record<
   { label: string; color: string; bg: string; phase: 'create' | 'business' | 'final' }
 > = {
   draft: { label: '录入中', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)', phase: 'create' },
-  port: { label: '待港口', color: '#0071e3', bg: 'rgba(0,113,227,0.12)', phase: 'create' },
+  port: { label: '待港口', color: '#4176e6', bg: 'rgba(0,113,227,0.12)', phase: 'create' },
   capacity: { label: '待运力', color: '#ff9500', bg: 'rgba(255,149,0,0.12)', phase: 'create' },
   plan: { label: '待方案', color: '#af52de', bg: 'rgba(175,82,222,0.12)', phase: 'create' },
   pending_confirm: { label: '待确认', color: '#ff9500', bg: 'rgba(255,149,0,0.12)', phase: 'business' },
-  confirmed: { label: '订单已确认', color: '#0071e3', bg: 'rgba(0,113,227,0.12)', phase: 'business' },
+  confirmed: { label: '订单已确认', color: '#4176e6', bg: 'rgba(0,113,227,0.12)', phase: 'business' },
   shipping: { label: '发运中', color: '#5856d6', bg: 'rgba(88,86,214,0.12)', phase: 'business' },
   shipped: { label: '发运完成', color: '#34c759', bg: 'rgba(52,199,89,0.12)', phase: 'business' },
   completed: { label: '已完成', color: '#34c759', bg: 'rgba(52,199,89,0.12)', phase: 'final' },

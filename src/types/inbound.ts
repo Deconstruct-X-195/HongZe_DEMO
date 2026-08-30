@@ -46,7 +46,7 @@ export interface Inbound {
 
 export const INBOUND_STATUS_META: Record<InboundStatus, { label: string; color: string; bg: string }> = {
   pending: { label: '待入库', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
-  arrived: { label: '已到仓', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  arrived: { label: '已到仓', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   inspecting: { label: '验收中', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
   weighing: { label: '过磅中', color: '#af52de', bg: 'rgba(175,82,222,0.12)' },
   unloading: { label: '卸车中', color: '#5856d6', bg: 'rgba(88,86,214,0.12)' },

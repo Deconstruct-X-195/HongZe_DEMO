@@ -14,7 +14,7 @@ defineProps<{
     class="flex flex-col items-center justify-center py-16 px-6 text-center animate-fade-in"
   >
     <div
-      class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-apple-subtext mb-4"
+      class="w-16 h-16 rounded-full bg-apple-fill flex items-center justify-center text-apple-subtext mb-4"
     >
       <Icon :name="icon" :size="28" />
     </div>

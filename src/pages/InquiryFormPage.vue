@@ -1,56 +1,56 @@
 <template>
-  <div class="min-h-screen bg-apple-bg">
-    <TopBar :title="isEdit ? '编辑询价' : '新增询价'" />
-    <div class="max-w-3xl mx-auto px-4 py-6">
-      <form @submit.prevent="handleSubmit" class="bg-white rounded-xl shadow-sm p-6">
+  <div class="animate-fade-in">
+    <PageHeader :title="isEdit ? '编辑询价' : '新增询价'" />
+    <div class="max-w-3xl mx-auto space-y-5">
+      <form @submit.prevent="handleSubmit" class="bg-apple-card rounded-xl shadow-sm p-6">
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">基本信息</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">询价单号</label><input v-model="form.inquiryNo" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm bg-apple-bg" placeholder="自动生成" readonly /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">状态</label><select v-model="form.status" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm"><option v-for="(meta, key) in INQUIRY_STATUS_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
+            <div><label class="field-label">询价单号</label><input v-model="form.inquiryNo" type="text" class="field-input bg-apple-fill/50" placeholder="自动生成" readonly /></div>
+            <div><label class="field-label">状态</label><select v-model="form.status" class="field-input"><option v-for="(meta, key) in INQUIRY_STATUS_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
           </div>
         </div>
 
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">客户信息</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">客户ID</label><input v-model="form.customerId" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="选择客户" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">客户名称 <span class="text-red-500">*</span></label><input v-model="form.customerName" type="text" required class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="客户名称" /></div>
+            <div><label class="field-label">客户ID</label><input v-model="form.customerId" type="text" class="field-input" placeholder="选择客户" /></div>
+            <div><label class="field-label">客户名称 <span class="text-apple-red">*</span></label><input v-model="form.customerName" type="text" required class="field-input" placeholder="客户名称" /></div>
           </div>
         </div>
 
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">货物信息</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">货物名称 <span class="text-red-500">*</span></label><input v-model="form.cargoName" type="text" required class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="如：铁矿石" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">品类</label><input v-model="form.cargoType" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="如：粉矿/块矿" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">品质</label><input v-model="form.cargoQuality" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="品位/指标" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">数量(吨) <span class="text-red-500">*</span></label><input v-model.number="form.cargoQty" type="number" required class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="0" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">来源矿山</label><input v-model="form.mine" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="矿山名称" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">现货/期货</label><select v-model="form.isSpot" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm"><option :value="true">现货</option><option :value="false">期货</option></select></div>
+            <div><label class="field-label">货物名称 <span class="text-apple-red">*</span></label><input v-model="form.cargoName" type="text" required class="field-input" placeholder="如：铁矿石" /></div>
+            <div><label class="field-label">品类</label><input v-model="form.cargoType" type="text" class="field-input" placeholder="如：粉矿/块矿" /></div>
+            <div><label class="field-label">品质</label><input v-model="form.cargoQuality" type="text" class="field-input" placeholder="品位/指标" /></div>
+            <div><label class="field-label">数量(吨) <span class="text-apple-red">*</span></label><input v-model.number="form.cargoQty" type="number" required class="field-input" placeholder="0" /></div>
+            <div><label class="field-label">来源矿山</label><input v-model="form.mine" type="text" class="field-input" placeholder="矿山名称" /></div>
+            <div><label class="field-label">现货/期货</label><select v-model="form.isSpot" class="field-input"><option :value="true">现货</option><option :value="false">期货</option></select></div>
           </div>
         </div>
 
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">运输需求</h3>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">运输方式</label><select v-model="form.transportMode" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm"><option v-for="(meta, key) in TRANSPORT_MODE_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">期望运输时间</label><input v-model="form.expectedDate" type="date" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">起点/发货地 <span class="text-red-500">*</span></label><input v-model="form.origin" type="text" required class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="起运地" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">终点/目的地 <span class="text-red-500">*</span></label><input v-model="form.destination" type="text" required class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="目的地" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">交易地点</label><input v-model="form.tradeLocation" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="交易地" /></div>
-            <div><label class="block text-sm font-medium text-apple-text mb-1.5">交割地点</label><input v-model="form.deliveryLocation" type="text" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm" placeholder="交割地" /></div>
+            <div><label class="field-label">运输方式</label><select v-model="form.transportMode" class="field-input"><option v-for="(meta, key) in TRANSPORT_MODE_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
+            <div><label class="field-label">期望运输时间</label><input v-model="form.expectedDate" type="date" class="field-input" /></div>
+            <div><label class="field-label">起点/发货地 <span class="text-apple-red">*</span></label><input v-model="form.origin" type="text" required class="field-input" placeholder="起运地" /></div>
+            <div><label class="field-label">终点/目的地 <span class="text-apple-red">*</span></label><input v-model="form.destination" type="text" required class="field-input" placeholder="目的地" /></div>
+            <div><label class="field-label">交易地点</label><input v-model="form.tradeLocation" type="text" class="field-input" placeholder="交易地" /></div>
+            <div><label class="field-label">交割地点</label><input v-model="form.deliveryLocation" type="text" class="field-input" placeholder="交割地" /></div>
           </div>
         </div>
 
         <div class="mb-6">
-          <label class="block text-sm font-medium text-apple-text mb-1.5">备注</label>
-          <textarea v-model="form.remark" rows="3" class="w-full px-3 py-2 rounded-lg border border-apple-border text-sm focus:outline-none resize-none" placeholder="备注信息"></textarea>
+          <label class="field-label">备注</label>
+          <textarea v-model="form.remark" rows="3" class="field-input resize-none" placeholder="备注信息"></textarea>
         </div>
 
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-apple-border">
-          <button type="button" @click="router.back()" class="px-4 py-2 text-sm font-medium text-apple-text border border-apple-border rounded-lg hover:bg-apple-bg transition-colors">取消</button>
-          <button type="submit" class="px-4 py-2 bg-apple-blue text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">{{ isEdit ? '保存修改' : '创建询价' }}</button>
+          <button type="button" @click="router.back()" class="btn-secondary">取消</button>
+          <button type="submit" class="btn-primary">{{ isEdit ? '保存修改' : '创建询价' }}</button>
         </div>
       </form>
     </div>
@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import TopBar from '@/components/TopBar.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { useBusinessStore } from '@/stores'
 import { INQUIRY_STATUS_META, TRANSPORT_MODE_META } from '@/types'
 import type { Inquiry, InquiryStatus, TransportMode } from '@/types'

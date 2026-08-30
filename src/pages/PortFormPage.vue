@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Icon from '@/components/Icon.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import Field from '@/components/Field.vue'
 import FieldGroup from '@/components/FieldGroup.vue'
 import InfoRow from '@/components/InfoRow.vue'
@@ -91,20 +92,16 @@ function next() {
   </div>
 
   <div v-else class="space-y-5 animate-fade-in">
-    <div class="flex items-center justify-between gap-3 flex-wrap">
-      <div>
-        <h1 class="text-xl font-semibold tracking-tight text-apple-text">港口信息</h1>
-        <p class="text-xs text-apple-subtext mt-1">
-          录入订单关联港口的拥堵、装卸与泊位情况
-        </p>
-      </div>
-      <span
-        v-if="saved"
-        class="text-[11px] text-apple-green flex items-center gap-1 animate-fade-in"
-      >
-        <Icon name="check-circle" :size="13" /> 已自动保存草稿
-      </span>
-    </div>
+    <PageHeader title="港口信息" subtitle="录入订单关联港口的拥堵、装卸与泊位情况">
+      <template #actions>
+        <span
+          v-if="saved"
+          class="text-[11px] text-apple-green flex items-center gap-1 animate-fade-in"
+        >
+          <Icon name="check-circle" :size="13" /> 已自动保存草稿
+        </span>
+      </template>
+    </PageHeader>
 
     <FieldGroup
       icon="anchor"
@@ -127,7 +124,7 @@ function next() {
       <div class="grid sm:grid-cols-2 gap-4">
         <Field label="港口名称" hint="自动联动订单预计到达港口">
           <input
-            class="field-input bg-gray-50/60"
+            class="field-input bg-apple-fill/60"
             :value="port.portName"
             @input="setField('portName', ($event.target as HTMLInputElement).value)"
             placeholder="如：黄骅港"
@@ -144,7 +141,7 @@ function next() {
               :class="
                 port.congestion === c.value
                   ? 'border-transparent text-white shadow-sm'
-                  : 'border-apple-border text-apple-subtext hover:bg-gray-50'
+                  : 'border-apple-border text-apple-subtext hover:bg-apple-hover/10'
               "
               :style="port.congestion === c.value ? { backgroundColor: c.color } : undefined"
             >
@@ -211,7 +208,7 @@ function next() {
 
     <div class="sticky bottom-4 z-30">
       <div
-        class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-white/85"
+        class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-apple-card/85"
       >
         <RouterLink :to="`/orders/${order.id}/edit`" class="btn-ghost">
           <Icon name="arrow-left" :size="15" /> 上一步

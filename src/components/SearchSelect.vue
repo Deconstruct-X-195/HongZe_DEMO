@@ -169,7 +169,7 @@ watch(
           <ul
             v-if="open && filtered.length > 0"
             id="search-select-dropdown"
-            class="rounded-apple border border-apple-border/60 bg-white shadow-card-hover py-1 max-h-72 overflow-y-auto"
+            class="rounded-apple border border-apple-border/60 bg-apple-card shadow-card-hover py-1 max-h-72 overflow-y-auto"
             :style="dropdownStyle"
           >
             <li
@@ -196,7 +196,7 @@ watch(
           <div
             v-if="open && filtered.length === 0"
             id="search-select-dropdown"
-            class="rounded-apple border border-apple-border/60 bg-white shadow-card-hover py-2 px-3 text-xs text-apple-subtext"
+            class="rounded-apple border border-apple-border/60 bg-apple-card shadow-card-hover py-2 px-3 text-xs text-apple-subtext"
             :style="dropdownStyle"
           >
             无匹配选项
@@ -219,7 +219,7 @@ watch(
         <button
           type="button"
           @click="clearOther"
-          class="flex items-center justify-center w-8 h-8 rounded-apple text-apple-subtext hover:bg-gray-100 hover:text-apple-text transition-colors shrink-0"
+          class="flex items-center justify-center w-8 h-8 rounded-apple text-apple-subtext hover:bg-apple-hover/10 hover:text-apple-text transition-colors shrink-0"
           title="取消自定义"
         >
           <Icon name="x" :size="15" />

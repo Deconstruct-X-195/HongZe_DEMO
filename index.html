@@ -8,6 +8,22 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- 主题初始化：先于应用挂载执行，避免暗色模式闪白 -->
+    <script>
+      ;(function () {
+        try {
+          var t = localStorage.getItem('hz-theme')
+          if (
+            t === 'dark' ||
+            (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)
+          ) {
+            document.documentElement.classList.add('dark')
+          }
+        } catch (e) {
+          /* 隐私模式下跟随系统 */
+        }
+      })()
+    </script>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

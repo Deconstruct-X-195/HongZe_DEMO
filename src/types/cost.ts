@@ -48,7 +48,7 @@ export interface CostSheet {
 }
 
 export const COST_ITEM_TYPE_META: Record<CostItemType, { label: string; color: string }> = {
-  rail_freight: { label: '铁路运费', color: '#0071e3' },
+  rail_freight: { label: '铁路运费', color: '#4176e6' },
   road_freight: { label: '公路运费', color: '#ff9500' },
   loading: { label: '装卸费', color: '#34c759' },
   handling: { label: '搬运费', color: '#af52de' },

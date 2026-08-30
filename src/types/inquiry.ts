@@ -36,7 +36,7 @@ export interface Inquiry {
 
 export const INQUIRY_STATUS_META: Record<InquiryStatus, { label: string; color: string; bg: string }> = {
   draft: { label: '草稿', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
-  submitted: { label: '已提交', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  submitted: { label: '已提交', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   received: { label: '已接收', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
   in_plan: { label: '方案中', color: '#af52de', bg: 'rgba(175,82,222,0.12)' },
   quoted: { label: '已报价', color: '#5856d6', bg: 'rgba(88,86,214,0.12)' },
@@ -45,7 +45,7 @@ export const INQUIRY_STATUS_META: Record<InquiryStatus, { label: string; color: 
 }
 
 export const TRANSPORT_MODE_META: Record<TransportMode, { label: string; color: string }> = {
-  rail: { label: '铁路', color: '#0071e3' },
+  rail: { label: '铁路', color: '#4176e6' },
   road: { label: '公路', color: '#ff9500' },
   rail_road: { label: '公铁联运', color: '#af52de' },
   water: { label: '水运', color: '#5ac8fa' },

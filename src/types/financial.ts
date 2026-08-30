@@ -37,6 +37,6 @@ export const PAYMENT_META: Record<PaymentStatus, { label: string; color: string;
 /** 发票状态元数据 */
 export const INVOICE_META: Record<InvoiceStatus, { label: string; color: string; bg: string }> = {
   none: { label: '未开具', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
-  issued: { label: '已开具', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  issued: { label: '已开具', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   delivered: { label: '已交付', color: '#34c759', bg: 'rgba(52,199,89,0.12)' },
 }

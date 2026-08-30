@@ -62,7 +62,7 @@ export const CHANNEL_GROUP_META: Record<
   ChannelGroup,
   { label: string; short: string; color: string; icon: string }
 > = {
-  rail_direct: { label: '铁路直达', short: '铁路直达', color: '#0071e3', icon: 'train' },
+  rail_direct: { label: '铁路直达', short: '铁路直达', color: '#4176e6', icon: 'train' },
   rail_transit: { label: '公铁联运', short: '公铁联运', color: '#af52de', icon: 'route' },
   road: { label: '公路直达', short: '公路直达', color: '#34c759', icon: 'truck' },
 }
@@ -84,7 +84,7 @@ export const CHANNEL_META: Record<
   ChannelType,
   { label: string; short: string; transfer?: string; color: string }
 > = {
-  rail_direct: { label: '铁路直达', short: '铁路直达', color: '#0071e3' },
+  rail_direct: { label: '铁路直达', short: '铁路直达', color: '#4176e6' },
   rail_caozhuang: { label: '公铁联运（曹庄镇站中转）', short: '公铁联运·曹庄镇', transfer: '曹庄镇站', color: '#af52de' },
   rail_xingtai: { label: '公铁联运（邢台南站中转）', short: '公铁联运·邢台南', transfer: '邢台南站', color: '#ff9500' },
   rail_transit: { label: '公铁联运', short: '公铁联运', color: '#af52de' },

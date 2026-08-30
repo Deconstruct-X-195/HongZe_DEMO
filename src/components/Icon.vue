@@ -34,6 +34,8 @@ export type IconName =
   | 'history'
   | 'user'
   | 'paperclip'
+  | 'sun'
+  | 'moon'
 
 const props = withDefaults(
   defineProps<{ name: IconName; size?: number }>(),
@@ -91,6 +93,9 @@ const PATHS: Record<IconName, string> = {
     '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />',
   paperclip:
     '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />',
+  sun:
+    '<circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />',
+  moon: '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />',
 }
 
 const inner = computed(() => PATHS[props.name] ?? '')

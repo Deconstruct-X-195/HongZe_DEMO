@@ -71,7 +71,7 @@ export const TRANSPORT_STATUS_META: Record<TransportRecord['status'], { label: s
 
 export const TRANSPORT_NODE_TYPE_META: Record<TransportNodeType, { label: string; color: string }> = {
   loading: { label: '装车', color: '#ff9500' },
-  departure: { label: '发车', color: '#0071e3' },
+  departure: { label: '发车', color: '#4176e6' },
   transit: { label: '中转', color: '#af52de' },
   arrival: { label: '到达', color: '#5ac8fa' },
   unloading: { label: '卸车', color: '#34c759' },

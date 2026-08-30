@@ -35,7 +35,7 @@ function toggle() {
     <component
       :is="collapsible ? 'button' : 'div'"
       @click="collapsible ? toggle() : undefined"
-      :class="collapsible ? 'w-full text-left hover:bg-gray-50/50 transition-colors' : ''"
+      :class="collapsible ? 'w-full text-left hover:bg-apple-hover/10 transition-colors' : ''"
       class="px-5 sm:px-6 pt-5 sm:pt-6"
     >
       <div class="flex items-start justify-between" :class="collapsible ? 'pb-4' : 'mb-5'">

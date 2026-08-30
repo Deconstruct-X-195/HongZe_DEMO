@@ -37,7 +37,7 @@ const STEPS: Step[] = [
                     ? 'bg-apple-blue text-white shadow-md scale-110'
                     : idx < current
                       ? 'bg-apple-green text-white'
-                      : 'bg-gray-100 text-apple-subtext'
+                      : 'bg-apple-fill text-apple-subtext'
                 "
               >
                 <Icon :name="idx < current ? 'check' : step.icon" :size="16" />
@@ -52,7 +52,7 @@ const STEPS: Step[] = [
           </RouterLink>
           <div v-else class="flex flex-col items-center gap-1.5 min-w-[64px]">
             <div
-              class="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 text-apple-subtext"
+              class="flex items-center justify-center w-9 h-9 rounded-full bg-apple-fill text-apple-subtext"
             >
               <Icon :name="step.icon" :size="16" />
             </div>

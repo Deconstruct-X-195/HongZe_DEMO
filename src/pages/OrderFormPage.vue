@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import Icon from '@/components/Icon.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import Field from '@/components/Field.vue'
 import FieldGroup from '@/components/FieldGroup.vue'
 import SearchSelect from '@/components/SearchSelect.vue'
@@ -201,20 +202,15 @@ function generate() {
 <template>
   <div class="space-y-5 animate-fade-in">
     <!-- 头部 -->
-    <div class="flex items-center justify-between gap-3 flex-wrap">
-      <div>
-        <h1 class="text-xl font-semibold tracking-tight text-apple-text">
-          {{ isEdit ? '编辑订单' : '新建订单' }}
-        </h1>
-        <p class="text-xs text-apple-subtext mt-1">
-          <template v-if="isEdit">
-            订单编号
-            <span class="font-mono font-semibold text-apple-text">{{ order.id }}</span>
-          </template>
-          <template v-else>填写后将自动生成订单编号并进入下一步</template>
-        </p>
-      </div>
-      <div class="flex items-center gap-2">
+    <PageHeader :title="isEdit ? '编辑订单' : '新建订单'">
+      <template #subtitle>
+        <template v-if="isEdit">
+          订单编号
+          <span class="font-mono font-semibold text-apple-text">{{ order.id }}</span>
+        </template>
+        <template v-else>填写后将自动生成订单编号并进入下一步</template>
+      </template>
+      <template #actions>
         <span
           v-if="saved"
           class="text-[11px] text-apple-green flex items-center gap-1 animate-fade-in"
@@ -224,8 +220,8 @@ function generate() {
         <button @click="saveDraft" class="btn-secondary">
           <Icon name="save" :size="15" /> 保存草稿
         </button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <FieldGroup icon="building" title="客户" desc="客户名称与联系人信息" collapsible v-model:isOpen="customerOpen" :summary="customerSummary">
       <div class="grid sm:grid-cols-2 gap-4">
@@ -389,7 +385,7 @@ function generate() {
         <div
           v-for="(c, idx) in order.customers"
           :key="c.id"
-          class="rounded-apple border border-apple-border/60 p-3 bg-gray-50/30"
+          class="rounded-apple border border-apple-border/60 p-3 bg-apple-fill/30"
         >
           <div class="flex items-center gap-2 mb-2">
             <span
@@ -503,7 +499,7 @@ function generate() {
     <!-- 操作栏 -->
     <div class="sticky bottom-4 z-30">
       <div
-        class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-white/85"
+        class="card px-4 py-3 flex items-center justify-between gap-3 backdrop-blur-xl bg-apple-card/85"
       >
         <RouterLink to="/" class="btn-ghost">
           <Icon name="arrow-left" :size="15" /> 返回首页

@@ -38,7 +38,7 @@ export interface Dispatch {
 
 export const DISPATCH_STATUS_META: Record<DispatchStatus, { label: string; color: string; bg: string }> = {
   draft: { label: '草稿', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
-  submitted: { label: '已提交', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  submitted: { label: '已提交', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   approved: { label: '已审批', color: '#af52de', bg: 'rgba(175,82,222,0.12)' },
   dispatched: { label: '已派单', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
   in_transit: { label: '运输中', color: '#5856d6', bg: 'rgba(88,86,214,0.12)' },
@@ -48,7 +48,7 @@ export const DISPATCH_STATUS_META: Record<DispatchStatus, { label: string; color
 }
 
 export const DISPATCH_TYPE_META: Record<DispatchType, { label: string; color: string }> = {
-  rail: { label: '铁路请车', color: '#0071e3' },
+  rail: { label: '铁路请车', color: '#4176e6' },
   road: { label: '公路派车', color: '#ff9500' },
   rail_road: { label: '公铁联运', color: '#af52de' },
 }

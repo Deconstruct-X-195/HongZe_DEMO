@@ -49,7 +49,7 @@ export interface Payment {
 
 export const PAYMENT_RECORD_STATUS_META: Record<PaymentRecordStatus, { label: string; color: string; bg: string }> = {
   pending: { label: '待付款', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
-  partial: { label: '部分付款', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  partial: { label: '部分付款', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   paid: { label: '已付款', color: '#34c759', bg: 'rgba(52,199,89,0.12)' },
   overdue: { label: '已逾期', color: '#ff3b30', bg: 'rgba(255,59,48,0.12)' },
   refunded: { label: '已退款', color: '#8e8e93', bg: 'rgba(142,142,147,0.12)' },
@@ -57,7 +57,7 @@ export const PAYMENT_RECORD_STATUS_META: Record<PaymentRecordStatus, { label: st
 
 export const PAYMENT_TYPE_META: Record<PaymentType, { label: string; color: string }> = {
   prepay: { label: '预付款', color: '#ff9500' },
-  progress: { label: '进度款', color: '#0071e3' },
+  progress: { label: '进度款', color: '#4176e6' },
   final: { label: '尾款', color: '#34c759' },
   deposit: { label: '押金', color: '#af52de' },
   other: { label: '其他', color: '#8e8e93' },

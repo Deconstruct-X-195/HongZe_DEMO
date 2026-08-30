@@ -18,7 +18,7 @@ export interface OperationLog {
 
 /** 角色元数据 */
 export const ROLE_META: Record<OperatorRole, { label: string; color: string }> = {
-  sales: { label: '业务员', color: '#0071e3' },
+  sales: { label: '业务员', color: '#4176e6' },
   port: { label: '港口专员', color: '#ff9500' },
   capacity: { label: '运力专员', color: '#af52de' },
   finance: { label: '财务人员', color: '#34c759' },

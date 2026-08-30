@@ -41,7 +41,7 @@ export interface Receipt {
 
 export const RECEIPT_STATUS_META: Record<ReceiptStatus, { label: string; color: string; bg: string }> = {
   pending: { label: '待接货', color: '#ff9500', bg: 'rgba(255,149,0,0.12)' },
-  in_progress: { label: '接货中', color: '#0071e3', bg: 'rgba(0,113,227,0.12)' },
+  in_progress: { label: '接货中', color: '#4176e6', bg: 'rgba(0,113,227,0.12)' },
   completed: { label: '已完成', color: '#34c759', bg: 'rgba(52,199,89,0.12)' },
   cancelled: { label: '已取消', color: '#ff3b30', bg: 'rgba(255,59,48,0.12)' },
 }

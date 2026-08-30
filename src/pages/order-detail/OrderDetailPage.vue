@@ -360,13 +360,13 @@ const autoTimeline = computed<TimelineNode[]>(() => {
     } else if (log.toStatus === 'confirmed') {
       stage = '财务确认收款'; icon = 'dollar'; color = '#34c759'
     } else if (log.toStatus === 'shipping') {
-      stage = '开始发运'; icon = 'send'; color = '#0071e3'
+      stage = '开始发运'; icon = 'send'; color = '#4176e6'
     } else if (log.toStatus === 'shipped') {
       stage = '全部发运完成'; icon = 'check-circle'; color = '#34c759'
     } else if (log.toStatus === 'completed') {
       stage = '订单已完成'; icon = 'check-circle'; color = '#34c759'
     } else if (log.action.includes('发运')) {
-      stage = '更新发运信息'; icon = 'send'; color = '#0071e3'
+      stage = '更新发运信息'; icon = 'send'; color = '#4176e6'
     } else if (log.action.includes('财务')) {
       stage = log.action; icon = 'dollar'; color = '#34c759'
     } else {
@@ -723,7 +723,7 @@ async function downloadPdf() {
               :bg="STATUS_META[currentStatus].bg"
             />
           </div>
-          <p class="text-xs text-apple-subtext mt-1.5">
+          <p class="text-sm text-apple-subtext mt-1.5">
             创建于 {{ fmtDate(order.createdAt) }} · 最后更新 {{ fmtDate(order.updatedAt) }}
           </p>
         </div>
@@ -752,11 +752,11 @@ async function downloadPdf() {
               class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all duration-300"
               :class="idx <= currentStepIdx
                 ? 'text-white'
-                : 'text-apple-subtext bg-gray-100'"
+                : 'text-apple-subtext bg-apple-fill'"
               :style="idx <= currentStepIdx ? { backgroundColor: STATUS_META[s].color } : {}"
             >
               <span class="w-4 h-4 rounded-full flex items-center justify-center text-[9px]"
-                :class="idx < currentStepIdx ? 'bg-white/30' : 'bg-white/20'">
+                :class="idx < currentStepIdx ? 'bg-apple-card/30' : 'bg-apple-card/20'">
                 {{ idx + 1 }}
               </span>
               {{ STATUS_META[s].label }}
@@ -774,12 +774,12 @@ async function downloadPdf() {
         :key="t.key"
         @click="activeTab = t.key"
         class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium rounded-[10px] transition-all duration-200 whitespace-nowrap"
-        :class="activeTab === t.key ? 'bg-apple-blue text-white shadow-sm' : 'text-apple-subtext hover:text-apple-text hover:bg-black/5'"
+        :class="activeTab === t.key ? 'bg-apple-blue text-white shadow-sm' : 'text-apple-subtext hover:text-apple-text hover:bg-apple-hover/10'"
       >
         <Icon :name="t.icon" :size="14" />
         {{ t.label }}
         <span v-if="t.key === 'log' && logs.length > 0" class="text-[10px] px-1.5 py-0.5 rounded-full"
-          :class="activeTab === t.key ? 'bg-white/20' : 'bg-apple-blue/10 text-apple-blue'">
+          :class="activeTab === t.key ? 'bg-apple-card/20' : 'bg-apple-blue/10 text-apple-blue'">
           {{ logs.length }}
         </span>
       </button>
@@ -795,7 +795,7 @@ async function downloadPdf() {
       <div v-if="activeTab === 'basic'" key="basic" class="space-y-3">
         <!-- 订单信息 -->
         <section class="card overflow-hidden">
-          <button @click="orderOpen = !orderOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/50 transition-colors">
+          <button @click="orderOpen = !orderOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-apple-hover/10 transition-colors">
             <div class="flex items-center gap-3">
               <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-apple-blue/10 text-apple-blue"><Icon name="clipboard-list" :size="16" /></div>
               <div class="text-left">
@@ -841,7 +841,7 @@ async function downloadPdf() {
 
         <!-- 港口信息 -->
         <section class="card overflow-hidden">
-          <button @click="portOpen = !portOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/50 transition-colors">
+          <button @click="portOpen = !portOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-apple-hover/10 transition-colors">
             <div class="flex items-center gap-3">
               <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-apple-orange/10 text-apple-orange"><Icon name="anchor" :size="16" /></div>
               <div class="text-left">
@@ -870,7 +870,7 @@ async function downloadPdf() {
 
         <!-- 运输组织方案（运力信息 + 运输方案 整合） -->
         <section class="card overflow-hidden">
-          <button @click="transportOpen = !transportOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/50 transition-colors">
+          <button @click="transportOpen = !transportOpen" class="w-full flex items-center justify-between px-5 py-3.5 hover:bg-apple-hover/10 transition-colors">
             <div class="flex items-center gap-3">
               <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-apple-purple/10 text-apple-purple"><Icon name="route" :size="16" /></div>
               <div class="text-left">
@@ -1048,7 +1048,7 @@ async function downloadPdf() {
                 总金额（元）
                 <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-apple-blue/10 text-apple-blue font-medium">系统自动计算</span>
               </label>
-              <div class="field-input flex items-center justify-between bg-gray-50 cursor-not-allowed">
+              <div class="field-input flex items-center justify-between bg-apple-fill cursor-not-allowed">
                 <span class="text-apple-text font-semibold">{{ fmtMoney(financial.totalAmount) }}</span>
                 <span class="text-[10px] text-apple-subtext flex items-center gap-1">
                   <Icon name="info" :size="11" /> 基于运输方案运费汇总
@@ -1098,7 +1098,7 @@ async function downloadPdf() {
           <h3 class="text-sm font-semibold text-apple-text flex items-center gap-2"><Icon name="paperclip" :size="15" class="text-apple-subtext" /> 财务凭证</h3>
           <!-- 凭证列表 -->
           <div v-if="financial.vouchers.length > 0" class="space-y-2">
-            <div v-for="v in financial.vouchers" :key="v.id" class="flex items-center gap-3 p-2.5 rounded-apple bg-gray-50/60 border border-apple-border/40">
+            <div v-for="v in financial.vouchers" :key="v.id" class="flex items-center gap-3 p-2.5 rounded-apple bg-apple-fill/60 border border-apple-border/40">
               <Icon name="file-text" :size="15" class="text-apple-blue shrink-0" />
               <div class="flex-1 min-w-0">
                 <div class="text-sm text-apple-text font-medium truncate">{{ v.name }}</div>
@@ -1208,7 +1208,7 @@ async function downloadPdf() {
                 </div>
               </div>
               <!-- 发运进度条 -->
-              <div class="h-2.5 rounded-full bg-gray-200/60 overflow-hidden">
+              <div class="h-2.5 rounded-full bg-apple-fill-strong/60 overflow-hidden">
                 <div class="h-full bg-apple-blue transition-all duration-500" :style="{ width: pct(shippingStats.shipped, shippingStats.planned) + '%' }"></div>
               </div>
               <div class="flex items-center gap-4 mt-2 text-[10px] text-apple-subtext">
@@ -1230,7 +1230,7 @@ async function downloadPdf() {
               </div>
 
               <!-- 操作指南 -->
-              <div class="rounded-apple-lg bg-white/60 border border-apple-border/40 px-3 py-2 mb-4 text-[11px] text-apple-subtext leading-relaxed">
+              <div class="rounded-apple-lg bg-apple-card/60 border border-apple-border/40 px-3 py-2 mb-4 text-[11px] text-apple-subtext leading-relaxed">
                 <span class="text-apple-text font-medium">操作说明：</span>
                 选择运输通道 → 填写本次发货量（吨）→ 上传发运凭证 → 点击「执行发货」。
                 系统将自动累加发运数量、更新货物状态、记录操作日志，并同步至「货物动态」标签页。
@@ -1250,7 +1250,7 @@ async function downloadPdf() {
 
                 <!-- 选中通道的实时状态 -->
                 <div v-if="batchForm.capacityId" class="grid grid-cols-3 gap-2">
-                  <div class="rounded-apple bg-white/60 px-3 py-2 border border-apple-border/40 text-center">
+                  <div class="rounded-apple bg-apple-card/60 px-3 py-2 border border-apple-border/40 text-center">
                     <div class="text-[10px] text-apple-subtext">通道总量</div>
                     <div class="text-sm font-bold text-apple-text">{{ fmtNum(shippingOf(batchForm.capacityId)?.plannedQty || 0) }}<span class="text-[10px] font-normal ml-0.5">吨</span></div>
                   </div>
@@ -1258,7 +1258,7 @@ async function downloadPdf() {
                     <div class="text-[10px] text-apple-blue">已发运</div>
                     <div class="text-sm font-bold text-apple-blue">{{ fmtNum(shippingOf(batchForm.capacityId)?.shippedQty || 0) }}<span class="text-[10px] font-normal ml-0.5">吨</span></div>
                   </div>
-                  <div class="rounded-apple bg-gray-50 px-3 py-2 border border-apple-border/40 text-center">
+                  <div class="rounded-apple bg-apple-fill px-3 py-2 border border-apple-border/40 text-center">
                     <div class="text-[10px] text-apple-subtext">剩余可发运</div>
                     <div class="text-sm font-bold text-apple-subtext">{{ fmtNum(selectedChannelUnshipped) }}<span class="text-[10px] font-normal ml-0.5">吨</span></div>
                   </div>
@@ -1350,7 +1350,7 @@ async function downloadPdf() {
                     </div>
                   </div>
                   <!-- 通道数据（仅3项核心数据） -->
-                  <div class="px-4 py-2.5 bg-gray-50/30 border-t border-apple-border/30">
+                  <div class="px-4 py-2.5 bg-apple-fill/30 border-t border-apple-border/30">
                     <div class="grid grid-cols-3 gap-2 text-center text-xs">
                       <div>
                         <div class="text-[10px] text-apple-subtext">通道总量</div>
@@ -1366,7 +1366,7 @@ async function downloadPdf() {
                       </div>
                     </div>
                     <!-- 发运进度条 -->
-                    <div class="h-1.5 rounded-full bg-gray-200/60 overflow-hidden mt-2">
+                    <div class="h-1.5 rounded-full bg-apple-fill-strong/60 overflow-hidden mt-2">
                       <div class="h-full bg-apple-blue transition-all duration-500" :style="{ width: pct(t.shipped, t.planned) + '%' }"></div>
                     </div>
                     <!-- 发运时间 + 凭证数 -->
@@ -1389,7 +1389,7 @@ async function downloadPdf() {
                 <button @click="activeTab = 'log'" class="ml-auto text-[11px] text-apple-blue font-medium hover:underline">查看全部</button>
               </h3>
               <div class="space-y-2">
-                <div v-for="log in shippingLogs.slice(0, 5)" :key="log.id" class="flex items-start gap-2.5 p-2.5 rounded-apple bg-gray-50/40 border border-apple-border/30">
+                <div v-for="log in shippingLogs.slice(0, 5)" :key="log.id" class="flex items-start gap-2.5 p-2.5 rounded-apple bg-apple-fill/40 border border-apple-border/30">
                   <div class="w-2 h-2 rounded-full mt-1.5 shrink-0" :style="{ backgroundColor: ROLE_META[log.role].color }"></div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
@@ -1475,7 +1475,7 @@ async function downloadPdf() {
             </div>
 
             <!-- 操作指南 -->
-            <div class="rounded-apple-lg bg-white/60 border border-apple-border/40 px-3 py-2 mb-4 text-[11px] text-apple-subtext leading-relaxed">
+            <div class="rounded-apple-lg bg-apple-card/60 border border-apple-border/40 px-3 py-2 mb-4 text-[11px] text-apple-subtext leading-relaxed">
               <span class="text-apple-text font-medium">操作说明：</span>
               选择已有发运记录的运输通道 → 填写到货入库量（货物到达终点站）和/或提货出关量（客户提货）→ 上传凭证 → 点击「执行操作」。
               <span class="text-apple-orange">注：在途运输量 = 发运量 - 仓储堆存量 - 已提货出关量，到货入库量不能超过在途运输量。</span>
@@ -1599,7 +1599,7 @@ async function downloadPdf() {
                   </div>
                 </div>
                 <!-- 通道仓储数据 -->
-                <div class="px-4 py-2.5 bg-gray-50/30 border-t border-apple-border/30">
+                <div class="px-4 py-2.5 bg-apple-fill/30 border-t border-apple-border/30">
                   <div class="grid grid-cols-3 gap-2 text-center text-xs">
                     <div>
                       <div class="text-[10px] text-apple-blue">在途运输</div>
@@ -1615,7 +1615,7 @@ async function downloadPdf() {
                     </div>
                   </div>
                   <!-- 堆叠进度条 -->
-                  <div class="h-1.5 rounded-full bg-gray-200/60 overflow-hidden flex mt-2">
+                  <div class="h-1.5 rounded-full bg-apple-fill-strong/60 overflow-hidden flex mt-2">
                     <div class="h-full bg-apple-green transition-all duration-500" :style="{ width: pct(t.pickedUp, t.planned) + '%' }"></div>
                     <div class="h-full bg-apple-orange transition-all duration-500" :style="{ width: pct(t.stored, t.planned) + '%' }"></div>
                     <div class="h-full bg-apple-blue/40 transition-all duration-500" :style="{ width: pct(t.inTransit, t.planned) + '%' }"></div>
@@ -1680,14 +1680,14 @@ async function downloadPdf() {
               <span class="font-medium text-apple-text">货物状态分布</span>
               <span>基于初始分配总量 {{ fmtNum(cargoDistribution.total) }} 吨</span>
             </div>
-            <div class="h-7 rounded-apple overflow-hidden flex bg-gray-100/60">
+            <div class="h-7 rounded-apple overflow-hidden flex bg-apple-fill/60">
               <div v-if="cargoDistribution.unshipped > 0" class="h-full flex items-center justify-center text-[10px] font-medium text-apple-subtext transition-all duration-500"
                 :style="{ width: cargoDistribution.unshippedPct + '%', backgroundColor: '#e5e5ea' }"
                 :title="`未发运 ${fmtNum(cargoDistribution.unshipped)} 吨`">
                 <span v-if="cargoDistribution.unshippedPct >= 8">{{ cargoDistribution.unshippedPct }}%</span>
               </div>
               <div v-if="cargoDistribution.inTransit > 0" class="h-full flex items-center justify-center text-[10px] font-medium text-white transition-all duration-500"
-                :style="{ width: cargoDistribution.inTransitPct + '%', backgroundColor: '#0071e3' }"
+                :style="{ width: cargoDistribution.inTransitPct + '%', backgroundColor: '#4176e6' }"
                 :title="`运输中 ${fmtNum(cargoDistribution.inTransit)} 吨`">
                 <span v-if="cargoDistribution.inTransitPct >= 8">{{ cargoDistribution.inTransitPct }}%</span>
               </div>
@@ -1705,7 +1705,7 @@ async function downloadPdf() {
             <!-- 图例 -->
             <div class="flex items-center gap-4 mt-2.5 text-[10px] flex-wrap">
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#e5e5ea"></span><span class="text-apple-subtext">未发运</span><span class="text-apple-text font-medium">{{ fmtNum(cargoDistribution.unshipped) }} 吨</span></span>
-              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#0071e3"></span><span class="text-apple-subtext">运输中</span><span class="text-apple-text font-medium">{{ fmtNum(cargoDistribution.inTransit) }} 吨</span></span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#4176e6"></span><span class="text-apple-subtext">运输中</span><span class="text-apple-text font-medium">{{ fmtNum(cargoDistribution.inTransit) }} 吨</span></span>
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#ff9500"></span><span class="text-apple-subtext">仓储堆存</span><span class="text-apple-text font-medium">{{ fmtNum(cargoDistribution.stored) }} 吨</span></span>
               <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#34c759"></span><span class="text-apple-subtext">已提货出关</span><span class="text-apple-text font-medium">{{ fmtNum(cargoDistribution.pickedUp) }} 吨</span></span>
             </div>
@@ -1716,7 +1716,7 @@ async function downloadPdf() {
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
           <!-- 未发运 -->
           <div class="card p-4 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-1 bg-gray-300"></div>
+            <div class="absolute top-0 left-0 w-full h-1 bg-apple-fill-strong"></div>
             <div class="flex items-center gap-1.5 text-[11px] text-apple-subtext mb-1">
               <Icon name="clock" :size="12" />
               <span>未发运</span>
@@ -1768,7 +1768,7 @@ async function downloadPdf() {
           <div v-else class="space-y-3">
             <div v-for="t in channelCargoTracking" :key="t.shipping.capacityId" class="rounded-apple-lg border border-apple-border/40 overflow-hidden">
               <!-- 通道头部 -->
-              <div class="flex items-center justify-between gap-3 px-4 py-3 bg-gray-50/40">
+              <div class="flex items-center justify-between gap-3 px-4 py-3 bg-apple-fill/40">
                 <div class="flex items-center gap-2.5 flex-1 min-w-0">
                   <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium shrink-0" :style="{ backgroundColor: t.channelColor + '1a', color: t.channelColor }">{{ t.channelLabel }}</span>
                   <span class="text-sm text-apple-text font-medium truncate">{{ t.route }}</span>
@@ -1781,9 +1781,9 @@ async function downloadPdf() {
               <!-- 通道货物分布 -->
               <div class="px-4 py-3">
                 <!-- 迷你堆叠条 -->
-                <div class="h-3 rounded-full overflow-hidden flex bg-gray-100/60 mb-3">
+                <div class="h-3 rounded-full overflow-hidden flex bg-apple-fill/60 mb-3">
                   <div v-if="t.unshipped > 0" class="h-full transition-all duration-500" style="background:#e5e5ea" :style="{ width: pct(t.unshipped, t.planned) + '%' }"></div>
-                  <div v-if="t.inTransit > 0" class="h-full transition-all duration-500" style="background:#0071e3" :style="{ width: pct(t.inTransit, t.planned) + '%' }"></div>
+                  <div v-if="t.inTransit > 0" class="h-full transition-all duration-500" style="background:#4176e6" :style="{ width: pct(t.inTransit, t.planned) + '%' }"></div>
                   <div v-if="t.stored > 0" class="h-full transition-all duration-500" style="background:#ff9500" :style="{ width: pct(t.stored, t.planned) + '%' }"></div>
                   <div v-if="t.pickedUp > 0" class="h-full transition-all duration-500" style="background:#34c759" :style="{ width: pct(t.pickedUp, t.planned) + '%' }"></div>
                 </div>
@@ -1871,7 +1871,7 @@ async function downloadPdf() {
               <div class="absolute -left-[18px] top-0.5 w-3.5 h-3.5 rounded-full border-2 border-white shadow-sm flex items-center justify-center"
                 :style="{ backgroundColor: node.color }">
               </div>
-              <div class="rounded-apple-lg border border-apple-border/40 p-3 bg-white/40">
+              <div class="rounded-apple-lg border border-apple-border/40 p-3 bg-apple-card/40">
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                   <div class="flex items-center gap-2">
                     <div class="flex items-center justify-center w-6 h-6 rounded-md shrink-0" :style="{ backgroundColor: node.color + '1a', color: node.color }">
@@ -1902,7 +1902,7 @@ async function downloadPdf() {
             <h3 class="text-sm font-semibold text-apple-text flex items-center gap-2">
               <Icon name="history" :size="15" class="text-apple-subtext" />
               完整操作日志
-              <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-apple-subtext font-medium">{{ logs.length }} 条</span>
+              <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-apple-fill text-apple-subtext font-medium">{{ logs.length }} 条</span>
             </h3>
           </div>
           <div v-if="logs.length === 0" class="py-6 text-center">
