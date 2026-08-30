@@ -7,6 +7,7 @@ export interface Outbound {
   outboundNo: string // 出库单号
   orderId: string // 关联订单ID
   batchId?: string // 关联库存批次ID
+  cargoBatchId?: string // 关联货物批次ID（V3 批次模型）
   // 提货信息
   picker: string // 提货主体（贸易商/客户/其他）
   pickerContact?: string // 提货人联系人

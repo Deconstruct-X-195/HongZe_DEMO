@@ -15,6 +15,14 @@
         <div class="mb-6">
           <h3 class="text-sm font-semibold text-apple-text mb-4 pb-2 border-b border-apple-border">货物信息</h3>
           <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="field-label">关联货物批次</label>
+              <select v-model="form.cargoBatchId" class="field-input">
+                <option value="">不关联批次</option>
+                <option v-for="b in orderBatches" :key="b.id" :value="b.id">{{ b.batchNo }}（计划 {{ b.plannedQty }}吨 / 已入库 {{ b.inboundQty }}吨）</option>
+              </select>
+              <p class="text-[9px] text-apple-subtext mt-0.5">选择批次后，保存时将自动累加批次的入库量</p>
+            </div>
             <div><label class="field-label">货物名称 <span class="text-apple-red">*</span></label><input v-model="form.cargoName" type="text" required class="field-input" /></div>
             <div><label class="field-label">品类</label><input v-model="form.cargoType" type="text" class="field-input" /></div>
             <div><label class="field-label">品质</label><input v-model="form.cargoQuality" type="text" class="field-input" /></div>
@@ -40,6 +48,7 @@
           </div>
         </div>
         <div class="mb-6"><label class="field-label">备注</label><textarea v-model="form.remark" rows="3" class="field-input resize-none"></textarea></div>
+        <p v-if="submitError" class="mb-4 text-xs text-apple-red">{{ submitError }}</p>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-apple-border">
           <button type="button" @click="router.back()" class="btn-secondary">取消</button>
           <button type="submit" class="btn-primary">{{ isEdit ? '保存修改' : '创建入库' }}</button>
@@ -60,7 +69,31 @@ const router = useRouter()
 const business = useBusinessStore()
 const isEdit = computed(() => !!route.params.id)
 const itemId = computed(() => route.params.id as string)
-const form = ref<Partial<Inbound>>({ inboundNo: '', orderId: '', dispatchId: '', cargoName: '', cargoType: '', cargoQuality: '', plannedQty: 0, vehicleNo: '', driverName: '', warehouse: '', location: '', grossWeight: 0, tareWeight: 0, netWeight: 0, actualQty: 0, status: 'pending' as InboundStatus, remark: '' })
-const handleSubmit = () => { if (isEdit.value) business.updateInbound(itemId.value, form.value); else business.addInbound(form.value); router.push('/inbound') }
-onMounted(() => { business.loadInbounds(); if (isEdit.value) { const item = business.inbounds.find((i) => i.id === itemId.value); if (item) form.value = { ...item } } })
+const form = ref<Partial<Inbound>>({ inboundNo: '', orderId: '', cargoBatchId: '', dispatchId: '', cargoName: '', cargoType: '', cargoQuality: '', plannedQty: 0, vehicleNo: '', driverName: '', warehouse: '', location: '', grossWeight: 0, tareWeight: 0, netWeight: 0, actualQty: 0, status: 'pending' as InboundStatus, remark: '' })
+// 当前订单下的可选货物批次（V3 批次模型）
+const orderBatches = computed(() => business.cargoBatches.filter((b) => b.orderId === form.value.orderId))
+const submitError = ref('')
+const handleSubmit = () => {
+  submitError.value = ''
+  if (!isEdit.value) {
+    const created = business.addInbound(form.value)
+    // 数量联动：入库量自动累加到货物批次（地磅口径）
+    if (created.cargoBatchId) {
+      const qty = created.actualQty || created.plannedQty || 0
+      const ok = business.registerBatchInbound(created.cargoBatchId, qty)
+      if (!ok) {
+        submitError.value = '批次入库量登记失败：入库量不得超过批次计划量（余量不足），单据已保存但未挂载批次'
+        return
+      }
+    }
+  } else {
+    business.updateInbound(itemId.value, form.value)
+  }
+  router.push('/inbound')
+}
+onMounted(() => {
+  business.loadInbounds()
+  business.loadCargoBatches()
+  if (isEdit.value) { const item = business.inbounds.find((i) => i.id === itemId.value); if (item) form.value = { ...item } }
+})
 </script>

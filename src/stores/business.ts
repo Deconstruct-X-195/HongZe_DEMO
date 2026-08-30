@@ -14,6 +14,7 @@ import type {
   InventoryBatch,
   Outbound,
   Settlement,
+  CargoBatch,
 } from '@/types'
 import {
   listCustomers,
@@ -81,6 +82,12 @@ import {
   upsertSettlement,
   deleteSettlement,
   genSettlementId,
+  listCargoBatches,
+  getCargoBatch,
+  upsertCargoBatch,
+  deleteCargoBatch,
+  genCargoBatchId,
+  nextBatchSeq,
 } from '@/lib/storage'
 
 const now = () => new Date().toISOString()
@@ -451,6 +458,87 @@ export const useBusinessStore = defineStore('business', () => {
   }
   const removeSettlement = (id: string) => { deleteSettlement(id); loadSettlements() }
 
+  // ============ 货物批次（V3 批次模型） ============
+  const cargoBatches = ref<CargoBatch[]>([])
+  const loadCargoBatches = () => { cargoBatches.value = listCargoBatches() }
+  const addCargoBatch = (data: Partial<CargoBatch>): CargoBatch => {
+    const orderId = data.orderId || ''
+    const seq = nextBatchSeq(orderId)
+    const b: CargoBatch = {
+      id: genCargoBatchId(),
+      batchNo: data.batchNo || `ORD-${orderId}-${String(seq).padStart(3, '0')}`,
+      orderId,
+      cargoName: data.cargoName || '',
+      cargoType: data.cargoType || '',
+      cargoQuality: data.cargoQuality || '',
+      mine: data.mine || '',
+      plannedQty: data.plannedQty || 0,
+      loadedQty: data.loadedQty || 0,
+      inboundQty: data.inboundQty || 0,
+      outboundQty: data.outboundQty || 0,
+      settledQty: data.settledQty || 0,
+      status: data.status || 'created',
+      createdAt: now(),
+      updatedAt: now(),
+      ...data,
+    }
+    upsertCargoBatch(b)
+    loadCargoBatches()
+    return b
+  }
+  const updateCargoBatch = (id: string, data: Partial<CargoBatch>) => {
+    const b = getCargoBatch(id)
+    if (b) { Object.assign(b, data, { updatedAt: now() }); upsertCargoBatch(b); loadCargoBatches() }
+  }
+  const removeCargoBatch = (id: string) => { deleteCargoBatch(id); loadCargoBatches() }
+
+  // ---- 数量联动（五级口径） ----
+  /** 派单回填装车量：状态推进至 dispatched/in_transit */
+  const registerBatchLoaded = (batchId: string, qty: number): boolean => {
+    const b = getCargoBatch(batchId)
+    if (!b || qty <= 0) return false
+    if (qty > b.plannedQty) return false // 装车量不得超计划量
+    b.loadedQty += qty
+    if (b.status === 'created') b.status = 'dispatched'
+    upsertCargoBatch(b)
+    loadCargoBatches()
+    return true
+  }
+  /** 入库登记：累加入库量（地磅口径），状态推进至在库 */
+  const registerBatchInbound = (batchId: string, qty: number): boolean => {
+    const b = getCargoBatch(batchId)
+    if (!b || qty <= 0) return false
+    if (b.inboundQty + qty > b.plannedQty) return false // 入库量不得超计划量
+    b.inboundQty += qty
+    if (['created', 'dispatched', 'in_transit'].includes(b.status)) b.status = 'in_stock'
+    upsertCargoBatch(b)
+    loadCargoBatches()
+    return true
+  }
+  /** 出库登记：累加出库量，校验出库量 ≤ 库存量（累计入库-累计出库） */
+  const registerBatchOutbound = (batchId: string, qty: number): boolean => {
+    const b = getCargoBatch(batchId)
+    if (!b || qty <= 0) return false
+    const stock = b.inboundQty - b.outboundQty
+    if (qty > stock) return false // 出库量不得超过库存量
+    b.outboundQty += qty
+    const target = Math.min(b.plannedQty, b.inboundQty)
+    b.status = b.outboundQty >= target && target > 0 ? 'all_out' : 'partial_out'
+    upsertCargoBatch(b)
+    loadCargoBatches()
+    return true
+  }
+  /** 结算登记：记录结算量，状态推进至已结算 */
+  const registerBatchSettled = (batchId: string, qty: number): boolean => {
+    const b = getCargoBatch(batchId)
+    if (!b || qty < 0) return false
+    b.settledQty = qty
+    if (b.status === 'all_out') b.status = 'settled'
+    upsertCargoBatch(b)
+    loadCargoBatches()
+    return true
+  }
+
   // ============ 统计计算 ============
   const customerCount = computed(() => customers.value.length)
   const inquiryCount = computed(() => inquiries.value.length)
@@ -474,6 +562,7 @@ export const useBusinessStore = defineStore('business', () => {
     loadInventoryBatches()
     loadOutbounds()
     loadSettlements()
+    loadCargoBatches()
   }
 
   return {
@@ -503,6 +592,9 @@ export const useBusinessStore = defineStore('business', () => {
     outbounds, loadOutbounds, addOutbound, updateOutbound, removeOutbound,
     // 结算
     settlements, loadSettlements, addSettlement, updateSettlement, removeSettlement,
+    // 货物批次（V3 批次模型）
+    cargoBatches, loadCargoBatches, addCargoBatch, updateCargoBatch, removeCargoBatch,
+    registerBatchLoaded, registerBatchInbound, registerBatchOutbound, registerBatchSettled,
     // 统计
     customerCount, inquiryCount, contractCount, pendingPaymentCount, inTransitCount, inventoryTotal,
     // 全部加载

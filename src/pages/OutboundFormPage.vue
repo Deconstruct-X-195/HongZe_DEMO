@@ -9,6 +9,14 @@
             <div><label class="field-label">出库单号</label><input v-model="form.outboundNo" type="text" class="field-input bg-apple-fill/50" readonly /></div>
             <div><label class="field-label">状态</label><select v-model="form.status" class="field-input"><option v-for="(meta, key) in OUTBOUND_STATUS_META" :key="key" :value="key">{{ meta.label }}</option></select></div>
             <div><label class="field-label">关联订单ID</label><input v-model="form.orderId" type="text" class="field-input" /></div>
+            <div>
+              <label class="field-label">关联货物批次</label>
+              <select v-model="form.cargoBatchId" class="field-input">
+                <option value="">不关联批次</option>
+                <option v-for="b in orderBatches" :key="b.id" :value="b.id">{{ b.batchNo }}（库存 {{ batchStock(b) }}吨 / 已出库 {{ b.outboundQty }}吨）</option>
+              </select>
+              <p class="text-[9px] text-apple-subtext mt-0.5">选择批次后，保存时将自动校验并累加批次的出库量</p>
+            </div>
             <div><label class="field-label">关联库存批次ID</label><input v-model="form.batchId" type="text" class="field-input" /></div>
           </div>
         </div>
@@ -44,6 +52,7 @@
           </div>
         </div>
         <div class="mb-6"><label class="field-label">备注</label><textarea v-model="form.remark" rows="3" class="field-input resize-none"></textarea></div>
+        <p v-if="submitError" class="mb-4 text-xs text-apple-red">{{ submitError }}</p>
         <div class="flex items-center justify-end gap-3 pt-4 border-t border-apple-border">
           <button type="button" @click="router.back()" class="btn-secondary">取消</button>
           <button type="submit" class="btn-primary">{{ isEdit ? '保存修改' : '创建出库' }}</button>
@@ -58,13 +67,40 @@ import { useRoute, useRouter } from 'vue-router'
 import PageHeader from '@/components/PageHeader.vue'
 import { useBusinessStore } from '@/stores'
 import { OUTBOUND_STATUS_META } from '@/types'
-import type { Outbound, OutboundStatus } from '@/types'
+import type { Outbound, OutboundStatus, CargoBatch } from '@/types'
 const route = useRoute()
 const router = useRouter()
 const business = useBusinessStore()
 const isEdit = computed(() => !!route.params.id)
 const itemId = computed(() => route.params.id as string)
-const form = ref<Partial<Outbound>>({ outboundNo: '', orderId: '', batchId: '', picker: '', pickerContact: '', pickerPhone: '', applicant: '', cargoName: '', cargoType: '', plannedQty: 0, actualQty: 0, warehouse: '', location: '', vehicleNo: '', driverName: '', driverPhone: '', paymentRequired: false, paymentVerified: false, paymentAmount: 0, status: 'pending' as OutboundStatus, remark: '' })
-const handleSubmit = () => { if (isEdit.value) business.updateOutbound(itemId.value, form.value); else business.addOutbound(form.value); router.push('/outbound') }
-onMounted(() => { business.loadOutbounds(); if (isEdit.value) { const item = business.outbounds.find((o) => o.id === itemId.value); if (item) form.value = { ...item } } })
+const form = ref<Partial<Outbound>>({ outboundNo: '', orderId: '', cargoBatchId: '', batchId: '', picker: '', pickerContact: '', pickerPhone: '', applicant: '', cargoName: '', cargoType: '', plannedQty: 0, actualQty: 0, warehouse: '', location: '', vehicleNo: '', driverName: '', driverPhone: '', paymentRequired: false, paymentVerified: false, paymentAmount: 0, status: 'pending' as OutboundStatus, remark: '' })
+// 当前订单下的可选货物批次（V3 批次模型）
+const orderBatches = computed(() => business.cargoBatches.filter((b) => b.orderId === form.value.orderId))
+function batchStock(b: CargoBatch): number {
+  return b.inboundQty - b.outboundQty
+}
+const submitError = ref('')
+const handleSubmit = () => {
+  submitError.value = ''
+  if (!isEdit.value) {
+    const created = business.addOutbound(form.value)
+    // 数量联动：出库量自动累加到货物批次，校验出库量 ≤ 库存量
+    if (created.cargoBatchId) {
+      const qty = created.actualQty || created.plannedQty || 0
+      const ok = business.registerBatchOutbound(created.cargoBatchId, qty)
+      if (!ok) {
+        submitError.value = '批次出库量登记失败：出库量不得超过批次库存量（累计入库-累计出库），单据已保存但未挂载批次'
+        return
+      }
+    }
+  } else {
+    business.updateOutbound(itemId.value, form.value)
+  }
+  router.push('/outbound')
+}
+onMounted(() => {
+  business.loadOutbounds()
+  business.loadCargoBatches()
+  if (isEdit.value) { const item = business.outbounds.find((o) => o.id === itemId.value); if (item) form.value = { ...item } }
+})
 </script>

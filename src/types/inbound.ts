@@ -6,6 +6,7 @@ export interface Inbound {
   id: string // 入库编号（主键）
   inboundNo: string // 入库单号
   orderId: string // 关联订单ID
+  cargoBatchId?: string // 关联货物批次ID（V3 批次模型）
   dispatchId?: string // 关联派单ID
   transportId?: string // 关联运输记录ID
   // 货物信息

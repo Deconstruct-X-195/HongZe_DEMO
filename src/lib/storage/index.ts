@@ -26,3 +26,4 @@ export * from './inbound'
 export * from './inventory'
 export * from './outbound'
 export * from './settlement'
+export * from './cargoBatch' // 货物批次（V3 批次模型）

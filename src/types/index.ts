@@ -25,3 +25,4 @@ export * from './inbound' // 入库单
 export * from './inventory' // 库存/堆存
 export * from './outbound' // 出库单
 export * from './settlement' // 结算单
+export * from './cargoBatch' // 货物批次（V3 批次模型）

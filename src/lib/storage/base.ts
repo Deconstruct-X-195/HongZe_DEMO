@@ -26,6 +26,8 @@ export const KEYS = {
   inventoryMovements: 'hongze:inventoryMovements',
   outbounds: 'hongze:outbounds',
   settlements: 'hongze:settlements',
+  // V3 批次模型
+  cargoBatches: 'hongze:cargoBatches',
 } as const
 
 export function read<T>(key: string): T[] {

@@ -6,6 +6,7 @@ import Badge from '@/components/Badge.vue'
 import EmptyState from '@/components/EmptyState.vue'
 import InfoRow from '@/components/InfoRow.vue'
 import TransportPlanReport from '@/components/TransportPlanReport.vue'
+import CargoBatchesTab from './CargoBatchesTab.vue'
 import { useOrderStore } from '@/stores/order'
 import { fmtDate, fmtNum, fmtMoney } from '@/lib/format'
 import { exportTransportPlanPdf } from '@/lib/pdfExport'
@@ -49,7 +50,7 @@ const roleOptions: { key: OperatorRole; label: string }[] = [
 ]
 
 /* ---------- 标签页 ---------- */
-type Tab = 'basic' | 'finance' | 'shipping' | 'warehouse' | 'cargo' | 'log'
+type Tab = 'basic' | 'finance' | 'shipping' | 'warehouse' | 'cargo' | 'batches' | 'log'
 const activeTab = ref<Tab>('basic')
 const tabs: { key: Tab; label: string; icon: any }[] = [
   { key: 'basic', label: '基本信息', icon: 'clipboard-list' },
@@ -57,6 +58,7 @@ const tabs: { key: Tab; label: string; icon: any }[] = [
   { key: 'shipping', label: '发运状态', icon: 'send' },
   { key: 'warehouse', label: '仓储堆存', icon: 'package' },
   { key: 'cargo', label: '货物动态', icon: 'route' },
+  { key: 'batches', label: '货物批次', icon: 'layers' },
   { key: 'log', label: '运输时间轴', icon: 'history' },
 ]
 
@@ -1841,6 +1843,9 @@ async function downloadPdf() {
       </div>
 
       <!-- ============ 运输时间轴（原操作日志，整合自动时间轴） ============ -->
+      <div v-else-if="activeTab === 'batches'" key="batches" class="space-y-3">
+        <CargoBatchesTab :order-id="id" :order-cargo-total="order?.cargoTotal ?? 0" />
+      </div>
       <div v-else-if="activeTab === 'log'" key="log" class="space-y-3">
         <!-- 跨标签页导航提示 -->
         <div class="flex items-center gap-2 text-[11px] text-apple-subtext px-1">
